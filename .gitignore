@@ -1,0 +1,17 @@
+# Daten und Modelle
+data/raw/
+data/processed/
+*.jpg
+*.png
+*.pt
+*.pth
+*.ckpt
+*.zip
+
+# Checkpoints & Logs
+logs/
+runs/
+wandb/
+outputs/
+__pycache__/
+
