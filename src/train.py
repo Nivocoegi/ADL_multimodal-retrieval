@@ -4,14 +4,19 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from dataset import Flickr8kDataset
 from transformers import CLIPProcessor, CLIPModel
+from datetime import datetime
 import os
 from pathlib import Path
 
 
-def main():
-    # --- 0. Presets ---
-    PROJECT_ROOT = Path(__file__).resolve().parents[1]
+def compile_filename(device, batch, epochs, lr, description):
+    today = datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_name = f"{today}_clip_{device}_bs{batch}_ep{epochs}_lr{lr}_{description}.pth"
+    return file_name
 
+
+
+def main():
     # --- 1. Konfiguration ---
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
     BATCH_SIZE = 32
@@ -36,6 +41,8 @@ def main():
 
     # --- 4. Dataset & DataLoader ---
     dataset = Flickr8kDataset(root_dir=str(IMG_DIR), captions_file=str(CAPTIONS_FILE))
+
+    print(dataset)
     loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)  # num_workers=0 für macOS
 
     # --- 5. Optimizer & Loss ---
@@ -44,6 +51,8 @@ def main():
 
     model.to(DEVICE)
     model.train()
+
+    train_data = []
 
     # --- 6. Training Loop ---
     for epoch in range(EPOCHS):
@@ -67,12 +76,21 @@ def main():
 
             total_loss += loss.item()
             loop.set_postfix(loss=loss.item())
+            train_data.append(total_loss)
 
         print(f"Epoch {epoch+1} — Avg Loss: {total_loss/len(loader):.4f}")
 
-    torch.save(model.state_dict(), "clip_finetuned_head.pth")
-    print("Model saved as clip_finetuned_head.pth")
+    filename = compile_filename(DEVICE, BATCH_SIZE, EPOCHS, LR, "test")
+
+    torch.save(model.state_dict(), filename)
+    print(f"Model saved as {filename}")
 
 
 if __name__ == '__main__':
     main()
+
+
+
+learning_rates = (1e-5, 5e-6, 1e-6)
+batch_sizes = (16, 32)
+epochs = (5, 8, 10)
