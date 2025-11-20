@@ -3,9 +3,9 @@
 # ----------------------------
 # Module laden
 # ----------------------------
-module load gcc/9.4.0-pe5.344
-module load python/3.9.12-pe5.345
-module load cuda/12.1
+module load gcc/9.4.0-pe5.34
+module load python3
+# module load cuda/12.1
 
 # ----------------------------
 # Conda initialisieren
