@@ -418,7 +418,6 @@ val_loader   = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num
 test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
 
-
 # # 4 Model Building and Training
 # 
 # ## 4.1 Loading Pretrained Model
