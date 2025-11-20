@@ -164,7 +164,7 @@ save_model = True
 use_subset = False
 subset_size = "-full"  # Number of samples in subset
 batch_size = 32 # for DataLoader
-num_workers = 0  # for DataLoader # 0 for local; 4 for cluster
+num_workers = 4  # for DataLoader # 0 for local; 4 for cluster
 
 
 # ========= Plotting parameters
@@ -427,9 +427,14 @@ test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, nu
 
 
 # load pretrained CLIP model and processor
-model_name = "openai/clip-vit-base-patch32"
-model = CLIPModel.from_pretrained("/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/data/models/clip-vit-base-patch32")
-processor = CLIPProcessor.from_pretrained(model_name)
+# model_name = "openai/clip-vit-base-patch32"
+local = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/data/models/clip-vit-base-patch32"
+# load model localy
+model = CLIPModel.from_pretrained(local, local_files_only=True)
+# load processor localy
+processor = CLIPProcessor.from_pretrained(local, local_files_only=True)
+
+
 
 # freez model parameters
 for param in model.parameters():
