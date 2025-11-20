@@ -3,6 +3,7 @@ from pathlib import Path
 import os
 
 
+# ========= find project root
 def find_project_root(start: Path = Path.cwd()):
     """Find the project root directory by looking for common markers."""
     # look for common project markers and return the first match
@@ -13,8 +14,9 @@ def find_project_root(start: Path = Path.cwd()):
 
 
 
+# ========== compile model filename
 def compile_filename(device, batch, epochs, lr, description):
-    today = datetime.now().strftime("%Y%m%d_%H%M%S")
-    file_name = f"{today}_clip_{device}_bs{batch}_ep{epochs}_lr{lr}_{description}.pth"
+    today = datetime.now().strftime("%Y%m%d")
+    file_name = f"{today}_clip_{device}_bs{batch}_ep{epochs}_lr{lr}_{description}"
     return file_name
 
