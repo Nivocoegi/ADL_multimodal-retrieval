@@ -61,7 +61,7 @@
 # 
 # ## 1.1 Modules and helper functions
 
-# In[19]:
+# In[51]:
 
 
 # ======================= Module Imports ============================= #
@@ -105,7 +105,7 @@ from PIL import Image # for image processing
 import matplotlib.pyplot as plt # for visualization
 
 
-# In[20]:
+# In[52]:
 
 
 # ================== Helperfunctions ======================== #
@@ -130,7 +130,7 @@ def compile_filename(subset_size, device, batch, epochs, lr, description):
 # ## 1.2 Funcitonality Pre-settings
 # Here paths and flags are set for data loading, model saving, and training configurations.
 
-# In[21]:
+# In[53]:
 
 
 # ===================== Path Settings ========================= #
@@ -149,7 +149,7 @@ CAPTIONS_FILE = DATA_DIR / "flickr8k_captions.csv"
 RUNS_DIR = PROJECT_ROOT / "runs"
 
 
-# In[22]:
+# In[54]:
 
 
 # ==================== Flags ======================= #
@@ -162,9 +162,9 @@ save_model = True
 
 # ========= DataLoader and subset parameters
 use_subset = False
-subset_size = 100  # Number of samples in subset
+subset_size = "-full"  # Number of samples in subset
 batch_size = 32 # for DataLoader
-num_workers = 0  # for DataLoader
+num_workers = 0  # for DataLoader # 0 for local; 4 for cluster
 
 
 # ========= Plotting parameters
@@ -172,13 +172,13 @@ save_plot = True
 show_plot = True
 
 # ======== Hyperparameter tuning
-hyperparameter_tuning = False
+hyperparameter_tuning = True
 
 
 # ## 1.3 Data Loading
 # 
 
-# In[23]:
+# In[55]:
 
 
 # ================== Load Dataset ====================== #
@@ -198,7 +198,7 @@ captions.head()
 # 
 # ## 2.1 Examples
 
-# In[24]:
+# In[56]:
 
 
 # plot some random images with captions as example
@@ -221,7 +221,7 @@ plt.show()
 
 # ## 2.2 Image and Caption analysis
 
-# In[25]:
+# In[57]:
 
 
 # captions per image
@@ -238,7 +238,7 @@ plt.show()
 
 
 
-# In[26]:
+# In[58]:
 
 
 # combine all captions into one large text
@@ -275,7 +275,7 @@ plt.tight_layout()
 plt.show()
 
 
-# In[27]:
+# In[59]:
 
 
 # closer look at nouns, verbs, adjectives in top 60 words
@@ -313,7 +313,7 @@ plt.tight_layout()
 plt.show()
 
 
-# In[28]:
+# In[60]:
 
 
 # number of unique words
@@ -321,7 +321,7 @@ num_unique_words = len(freq)
 print(f"Number of unique words in captions: {num_unique_words}")
 
 
-# In[29]:
+# In[61]:
 
 
 # average caption length
@@ -329,7 +329,7 @@ avg_caption_length = sum(len(caption.split()) for caption in captions["caption"]
 print(f"Average caption length: {avg_caption_length:.2f} words")
 
 
-# In[30]:
+# In[62]:
 
 
 # image proerties
@@ -367,7 +367,7 @@ plt.show()
 # 
 # ## 3.1 Subset
 
-# In[31]:
+# In[63]:
 
 
 # subset option
@@ -385,7 +385,7 @@ print(captions.groupby("filename").size().describe())# number of captions per im
 
 # ## 3.2 Dataloader
 
-# In[32]:
+# In[64]:
 
 
 # create new csv file for subset
@@ -423,7 +423,7 @@ test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, nu
 # 
 # ## 4.1 Loading Pretrained Model
 
-# In[33]:
+# In[65]:
 
 
 # load pretrained CLIP model and processor
@@ -468,7 +468,7 @@ print(f"Model will be saved as: {filename}")
 # 
 # ## 4.2 Training Loop
 
-# In[34]:
+# In[66]:
 
 
 def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs, filename, patience=5):
@@ -607,7 +607,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
     return pd.DataFrame(logs)
 
 
-# In[18]:
+# In[67]:
 
 
 # train model
@@ -617,7 +617,7 @@ if not hyperparameter_tuning:
 
 # ## 4.3 Saving the Model and export Data
 
-# In[168]:
+# In[68]:
 
 
 # save logs to csv
@@ -628,7 +628,7 @@ if not hyperparameter_tuning:
         print(f"Training logs saved to {model_file}")
 
 
-# In[169]:
+# In[69]:
 
 
 # plot training results
@@ -647,7 +647,7 @@ if not hyperparameter_tuning:
         plt.show()
 
 
-# In[170]:
+# In[70]:
 
 
 # plot recalls
@@ -671,7 +671,7 @@ if not hyperparameter_tuning:
 # ## 4.3 Hyperparameter Tuning
 # 
 
-# In[48]:
+# In[71]:
 
 
 if hyperparameter_tuning:
@@ -681,9 +681,9 @@ if hyperparameter_tuning:
 
     # Grid
     hyperparameter_grid = {
-        "learning_rate": [1e-5, 5e-5],
+        "learning_rate": [1e-5, 5e-5, 1e-4],
         "batch_size": [16, 32, 64],
-        "num_epochs": [10]
+        "num_epochs": [30]
     }
     # Number of Hyperparameter combinations
     total_runs = (len(hyperparameter_grid["learning_rate"]) *
