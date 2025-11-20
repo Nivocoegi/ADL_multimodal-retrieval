@@ -428,7 +428,7 @@ test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, nu
 
 # load pretrained CLIP model and processor
 model_name = "openai/clip-vit-base-patch32"
-model = CLIPModel.from_pretrained(model_name)
+model = CLIPModel.from_pretrained("/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/data/models/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained(model_name)
 
 # freez model parameters
@@ -459,7 +459,7 @@ model.to(DEVICE)
 model.train()
 
 # prepare filename for saving
-run_name = "test-run"
+run_name = "HPC_testrun"
 filename = compile_filename(subset_size, DEVICE, batch_size, epochs, lr, run_name)
 print(f"Model will be saved as: {filename}")
 

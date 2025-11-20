@@ -20,3 +20,7 @@ def compile_filename(device, batch, epochs, lr, description):
     file_name = f"{today}_clip_{device}_bs{batch}_ep{epochs}_lr{lr}_{description}"
     return file_name
 
+
+from transformers import CLIPModel
+model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+model.save_pretrained("clip-vit-base-patch32")
