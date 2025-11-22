@@ -89,7 +89,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 # ========== Models
-from transformers import CLIPProcessor, CLIPModel, CLIPTokenizer
+from transformers import CLIPProcessor, CLIPModel, CLIPTokenizer, CLIPFeatureExtractor
 
 # ========== Custom Module for dataloader
 import importlib
@@ -436,9 +436,9 @@ tokenizer_path = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/cl
 model = CLIPModel.from_pretrained(model_path, local_files_only=True)
 # Tokenizer / Processor laden
 tokenizer = CLIPTokenizer.from_pretrained(tokenizer_path, local_files_only=True)
-processor = CLIPProcessor(tokenizer=tokenizer, feature_extractor=None)
+feature_extractor = CLIPFeatureExtractor.from_pretrained(tokenizer_path, local_files_only=True)
+processor = CLIPProcessor(tokenizer=tokenizer, feature_extractor=feature_extractor)
 # processor = CLIPProcessor.from_pretrained(tokenizer_path, local_files_only=True)
-
 
 
 
