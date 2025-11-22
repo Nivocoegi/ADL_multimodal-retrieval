@@ -429,7 +429,7 @@ test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, nu
 # model_name = "openai/clip-vit-base-patch32"
 local_path = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/clip-vit-base-patch32"
 # local_path = "/Users/nicolasvogel/Dokumente/16_ZHAW_MSc/V5_9_Adcanced_Deep_Learning/ADL_multimodal-retrieval_Misc/clip-vit-base-patch32"
-model = CLIPModel.from_pretrained(local_path, local_files_only=True, from_flax=True)
+model = CLIPModel.from_pretrained(local_path, local_files_only=True, use_safetensors=True)
 processor = CLIPProcessor.from_pretrained(local_path, local_files_only=True)
 
 
