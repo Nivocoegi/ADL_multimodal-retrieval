@@ -720,7 +720,7 @@ if hyperparameter_tuning:
         print(f"\n=== Training {run_name} | run {current_run}/{total_runs} ===")
 
         # ----- Reinitialize model + optimizer -----
-        model = CLIPModel.from_pretrained(model_name)
+        model = CLIPModel.from_pretrained(model)
 
         # freez parameters
         for param in model.parameters():
