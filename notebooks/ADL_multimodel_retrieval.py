@@ -498,6 +498,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
 
         with torch.no_grad():
             for images, texts in dataloader:
+                images = [img.squeeze() for img in images]
                 inputs = processor(text=texts, images=images, return_tensors="pt", padding=True).to(DEVICE)
 
                 img = model.get_image_features(pixel_values=inputs["pixel_values"])
