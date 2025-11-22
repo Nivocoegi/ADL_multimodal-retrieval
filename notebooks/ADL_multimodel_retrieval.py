@@ -536,6 +536,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         train_loss = 0
 
         for images, texts in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}", leave=False):
+            images = [img.squeeze() for img in images]
             inputs = processor(images=images, text=texts, padding=True, return_tensors="pt").to(DEVICE)
             outputs = model(**inputs)
 
@@ -559,6 +560,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
 
         with torch.no_grad():
             for images, texts in val_loader:
+                images = [img.squeeze() for img in images]
                 inputs = processor(images=images, text=texts, padding=True, return_tensors="pt").to(DEVICE)
                 outputs = model(**inputs)
 
