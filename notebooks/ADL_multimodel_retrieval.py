@@ -435,7 +435,12 @@ tokenizer_path = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/cl
 # Modell laden
 model = CLIPModel.from_pretrained(model_path, local_files_only=True)
 # Tokenizer / Processor laden
-processor = CLIPProcessor.from_pretrained(tokenizer_path, local_files_only=True)
+tokenizer = CLIPTokenizer.from_pretrained(tokenizer_path, local_files_only=True)
+processor = CLIPProcessor(tokenizer=tokenizer, feature_extractor=None)
+# processor = CLIPProcessor.from_pretrained(tokenizer_path, local_files_only=True)
+
+
+
 
 
 # freez model parameters
