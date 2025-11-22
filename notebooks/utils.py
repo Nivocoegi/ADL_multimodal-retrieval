@@ -32,3 +32,9 @@ if __name__ == "__main__":
 
     model.save_pretrained("clip-vit-base-patch32")
     processor.save_pretrained("clip-vit-base-patch32")
+
+    from safetensors.torch import load_file
+    import torch
+
+    weights = load_file("/Users/nicolasvogel/Dokumente/16_ZHAW_MSc/V5_9_Adcanced_Deep_Learning/ADL_multimodal-retrieval_Misc/clip-vit-base-patch32/model.safetensors")
+    torch.save(weights, "pytorch_model.bin")
