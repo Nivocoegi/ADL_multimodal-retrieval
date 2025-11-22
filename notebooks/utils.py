@@ -21,12 +21,14 @@ def compile_filename(device, batch, epochs, lr, description):
     return file_name
 
 
-from transformers import CLIPModel, CLIPProcessor
+if __name__ == "__main__":
 
-model_name = "openai/clip-vit-base-patch32"
+    from transformers import CLIPModel, CLIPProcessor
 
-model = CLIPModel.from_pretrained(model_name)
-processor = CLIPProcessor.from_pretrained(model_name)
+    model_name = "openai/clip-vit-base-patch32"
 
-model.save_pretrained("clip-vit-base-patch32")
-processor.save_pretrained("clip-vit-base-patch32")
+    model = CLIPModel.from_pretrained(model_name)
+    processor = CLIPProcessor.from_pretrained(model_name)
+
+    model.save_pretrained("clip-vit-base-patch32")
+    processor.save_pretrained("clip-vit-base-patch32")
