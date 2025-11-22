@@ -89,7 +89,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 # ========== Models
-from transformers import CLIPProcessor, CLIPModel
+from transformers import CLIPProcessor, CLIPModel, CLIPTokenizer
 
 # ========== Custom Module for dataloader
 import importlib
@@ -427,12 +427,15 @@ test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, nu
 
 # load pretrained CLIP model and processor
 # model_name = "openai/clip-vit-base-patch32"
-local_path = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/clip-vit-base-patch32"
 # local_path = "/Users/nicolasvogel/Dokumente/16_ZHAW_MSc/V5_9_Adcanced_Deep_Learning/ADL_multimodal-retrieval_Misc/clip-vit-base-patch32"
-model = CLIPModel.from_pretrained(local_path, local_files_only=True)
 
-processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32", local_files_only=False)   # erlaubt das Laden des Tokenizers
-
+# Pfade
+model_path = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/clip-vit-base-patch32"
+tokenizer_path = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/clip-vit-base-patch32-legacy"
+# Modell laden
+model = CLIPModel.from_pretrained(model_path, local_files_only=True, use_safetensors=True)
+# Tokenizer / Processor laden
+processor = CLIPProcessor.from_pretrained(tokenizer_path, local_files_only=True)
 
 
 # freez model parameters

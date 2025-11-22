@@ -23,18 +23,28 @@ def compile_filename(device, batch, epochs, lr, description):
 
 if __name__ == "__main__":
 
-    from transformers import CLIPModel, CLIPProcessor
+    # from transformers import CLIPModel, CLIPProcessor
+    #
+    # model_name = "openai/clip-vit-base-patch32"
+    #
+    # model = CLIPModel.from_pretrained(model_name)
+    # processor = CLIPProcessor.from_pretrained(model_name)
+    #
+    # model.save_pretrained("clip-vit-base-patch32")
+    # processor.save_pretrained("clip-vit-base-patch32")
+    #
+    # from safetensors.torch import load_file
+    # import torch
+    #
+    # weights = load_file("/Users/nicolasvogel/Dokumente/16_ZHAW_MSc/V5_9_Adcanced_Deep_Learning/ADL_multimodal-retrieval_Misc/clip-vit-base-patch32/model.safetensors")
+    # torch.save(weights, "pytorch_model.bin")
 
-    model_name = "openai/clip-vit-base-patch32"
+    from transformers import CLIPTokenizer, CLIPProcessor
 
-    model = CLIPModel.from_pretrained(model_name)
-    processor = CLIPProcessor.from_pretrained(model_name)
+    # Lade auf deinem lokalen Rechner
+    tokenizer = CLIPTokenizer.from_pretrained("openai/clip-vit-base-patch32")
+    processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
-    model.save_pretrained("clip-vit-base-patch32")
-    processor.save_pretrained("clip-vit-base-patch32")
-
-    from safetensors.torch import load_file
-    import torch
-
-    weights = load_file("/Users/nicolasvogel/Dokumente/16_ZHAW_MSc/V5_9_Adcanced_Deep_Learning/ADL_multimodal-retrieval_Misc/clip-vit-base-patch32/model.safetensors")
-    torch.save(weights, "pytorch_model.bin")
+    # Speichere **nur die Tokenizer-Dateien**, kompatibel mit älteren Transformers
+    tokenizer.save_pretrained("./clip-vit-base-patch32-legacy")
+    processor.save_pretrained("./clip-vit-base-patch32-legacy")
