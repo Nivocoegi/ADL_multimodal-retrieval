@@ -433,7 +433,7 @@ test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, nu
 model_path = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/clip-vit-base-patch32"
 tokenizer_path = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/clip-vit-base-patch32-legacy"
 # Modell laden
-model = CLIPModel.from_pretrained(model_path, local_files_only=True, use_safetensors=True)
+model = CLIPModel.from_pretrained(model_path, local_files_only=True)
 # Tokenizer / Processor laden
 processor = CLIPProcessor.from_pretrained(tokenizer_path, local_files_only=True)
 
