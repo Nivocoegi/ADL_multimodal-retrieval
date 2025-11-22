@@ -729,7 +729,7 @@ if hyperparameter_tuning:
         model = CLIPModel.from_pretrained(model_path, local_files_only=True)
         # Tokenizer / Processor laden
         tokenizer = CLIPTokenizer.from_pretrained(tokenizer_path, local_files_only=True)
-        feature_extractor = CLIPFeatureExtractor.from_pretrained(tokenizer_path, local_files_only=True)
+        feature_extractor = CLIPFeatureExtractor.from_pretrained(tokenizer_path, local_files_only=True, size=224, resample = 2)
         processor = CLIPProcessor(tokenizer=tokenizer, feature_extractor=feature_extractor)
 
         # freez parameters
