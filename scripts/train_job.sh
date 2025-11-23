@@ -9,9 +9,14 @@ module load USS/2022
 module load miniconda3/4.12.0
 
 
+
+
+
+
 # virtuellen Environment aktivieren
 source /cfs/software/uss/2022/spack/linux-rocky8-x86_64/gcc-9.4.0/miniconda3-4.12.0-7riiqd3uthjsmxqkabjrfhfxhyh5epcl/etc/profile.d/conda.sh
-conda activate ADL_multimodel_retrieval
+conda activate /cfs/earth/scratch/vognic01/.conda/envs/ADL_multimodal-retrieval
+
 
 # ---- 3) Debug Info ----
 echo "Python executable:"
