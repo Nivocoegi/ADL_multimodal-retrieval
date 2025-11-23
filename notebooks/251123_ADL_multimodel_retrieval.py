@@ -171,11 +171,11 @@ save_plot = True
 show_plot = True
 
 # ======== Hyperparameter tuning
-hyperparameter_tuning = False
+hyperparameter_tuning = True
 
 
 # ======== Cluster settings
-cluster = False
+cluster = True
 
 if cluster:
     num_workers = 4
@@ -433,14 +433,14 @@ test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, nu
 
 
 # load pretrained CLIP model and processor
-if cluster:
-    model_path = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/clip-vit-base-patch32"
-    model = CLIPModel.from_pretrained(model_path, local_files_only=True)
-    processor = CLIPProcessor.from_pretrained(model_path, local_files_only=True)
-else:
-    model_name = "openai/clip-vit-base-patch32"
-    model = CLIPModel.from_pretrained(model_name)
-    processor = CLIPProcessor.from_pretrained(model_name)
+# if cluster:
+#     model_path = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/clip-vit-base-patch32"
+#     model = CLIPModel.from_pretrained(model_path, local_files_only=True)
+#     processor = CLIPProcessor.from_pretrained(model_path, local_files_only=True)
+# else:
+model_name = "openai/clip-vit-base-patch32"
+model = CLIPModel.from_pretrained(model_name)
+processor = CLIPProcessor.from_pretrained(model_name)
 
 # freez model parameters
 for param in model.parameters():
@@ -719,14 +719,14 @@ if hyperparameter_tuning:
         print(f"\n=== Training {run_name} | run {current_run}/{total_runs} ===")
 
         # ----- Reinitialize model + optimizer -----
-        if cluster:
-            model_path = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/clip-vit-base-patch32"
-            model = CLIPModel.from_pretrained(model_path, local_files_only=True)
-            processor = CLIPProcessor.from_pretrained(model_path, local_files_only=True)
-        else:
-            model_name = "openai/clip-vit-base-patch32"
-            model = CLIPModel.from_pretrained(model_name)
-            processor = CLIPProcessor.from_pretrained(model_name)
+        # if cluster:
+        #     model_path = "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/clip-vit-base-patch32"
+        #     model = CLIPModel.from_pretrained(model_path, local_files_only=True)
+        #     processor = CLIPProcessor.from_pretrained(model_path, local_files_only=True)
+        # else:
+        model_name = "openai/clip-vit-base-patch32"
+        model = CLIPModel.from_pretrained(model_name)
+        processor = CLIPProcessor.from_pretrained(model_name)
 
         # freez parameters
         for param in model.parameters():
