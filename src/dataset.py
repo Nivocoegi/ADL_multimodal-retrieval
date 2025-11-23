@@ -1,8 +1,9 @@
 """
-Class to load data
 
+Class to load data into a PyTorch Dataset.
 
 @author: vognic01
+
 """
 
 
@@ -15,13 +16,16 @@ import pandas as pd
 
 class Flickr8kDataset(Dataset):
     def __init__(self, root_dir, captions_file, preprocess=None):
-        """
-        root_dir: Path to images
-        captions_file: CSV with 'filename' and 'caption'
-        preprocess: CLIP-Preprocessing
-        """
         self.root_dir = root_dir
-        self.captions = pd.read_csv(captions_file, sep=None, engine="python")
+
+        # Accept CSV path or DataFrame
+        if isinstance(captions_file, str):
+            self.captions = pd.read_csv(captions_file)
+        elif isinstance(captions_file, pd.DataFrame):
+            self.captions = captions_file.reset_index(drop=True)
+        else:
+            raise ValueError("captions_file must be a path or DataFrame")
+
         self.preprocess = preprocess or transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
@@ -32,8 +36,7 @@ class Flickr8kDataset(Dataset):
 
     def __getitem__(self, idx):
         row = self.captions.iloc[idx]
-        img_path = os.path.join(self.root_dir, row['filename'])
+        img_path = os.path.join(self.root_dir, row["filename"])
         image = Image.open(img_path).convert("RGB")
         image = self.preprocess(image)
-        caption = row['caption']
-        return image, caption
+        return image, row["caption"]

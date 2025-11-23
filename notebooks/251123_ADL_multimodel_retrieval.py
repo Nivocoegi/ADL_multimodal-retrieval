@@ -154,7 +154,7 @@ RUNS_DIR = PROJECT_ROOT / "runs"
 # ==================== Flags ======================= #
 
 # ========= Finetuning flag
-finetuning = True
+finetuning = False
 
 # ========= model saving flag
 save_model = True
@@ -441,16 +441,23 @@ test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, nu
 model_name = "openai/clip-vit-base-patch32"
 model = CLIPModel.from_pretrained(model_name)
 processor = CLIPProcessor.from_pretrained(model_name)
+if finetuning:
 
-# freez model parameters
-for param in model.parameters():
-    param.requires_grad = False
+    # freez model parameters
+    for param in model.parameters():
+        param.requires_grad = False
 
-# onyl train projection layers
-for param in model.visual_projection.parameters():
-    param.requires_grad = True
-for param in model.text_projection.parameters():
-    param.requires_grad = True
+    # onyl train projection layers
+    for param in model.visual_projection.parameters():
+        param.requires_grad = True
+    for param in model.text_projection.parameters():
+        param.requires_grad = True
+else:
+
+    # train all parameters
+    for p in model.parameters():
+        p.requires_grad = True
+
 
 # optimizer, loss function and other parameters
 loss_fn = nn.CrossEntropyLoss()
@@ -712,7 +719,7 @@ if hyperparameter_tuning:
         hyperparameter_grid["num_epochs"]
     ):
         today = datetime.now().strftime("%Y%m%d")
-        run_name = f"{today}_HT_lr{lr}_bs{batch_size}_ep{epochs}"
+        run_name = f"{today}_HT-full_lr{lr}_bs{batch_size}_ep{epochs}"
         run_dir = RUNS_DIR / run_name
         run_dir.mkdir(parents=True, exist_ok=True)
 
@@ -729,14 +736,19 @@ if hyperparameter_tuning:
         processor = CLIPProcessor.from_pretrained(model_name)
 
         # freez parameters
-        for param in model.parameters():
-            param.requires_grad = False
+        if finetuning:
+            for param in model.parameters():
+                param.requires_grad = True
 
-        # only train projection layers
-        for param in model.visual_projection.parameters():
-            param.requires_grad = True
-        for param in model.text_projection.parameters():
-            param.requires_grad = True
+            # only train projection layers
+            for param in model.visual_projection.parameters():
+                param.requires_grad = True
+            for param in model.text_projection.parameters():
+                param.requires_grad = True
+        else:
+            # train all parameters
+            for p in model.parameters():
+                p.requires_grad = True
 
 
         # Optimizer
