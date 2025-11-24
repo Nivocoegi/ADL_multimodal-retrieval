@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/ADL_multimodel_retrieval.py", line 213, in <module>
+    img = Image.open(os.path.join(IMG_DIR, row['filename']))
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/PIL/Image.py", line 2975, in open
+    fp = builtins.open(filename, "rb")
+FileNotFoundError: [Errno 2] No such file or directory: '/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/data/Images/2962977152_9d6958fdd5.jpg'

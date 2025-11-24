@@ -1,0 +1,42 @@
+Python executable:
+Python 3.10.19
+GPU Info:
+Sun Nov 23 17:10:18 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.161.07             Driver Version: 535.161.07   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA L40S                    On  | 00000000:4C:00.0 Off |                    0 |
+| N/A   30C    P8              34W / 350W |      0MiB / 46068MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
+Dataset contains 40455 image-caption pairs.
+Number of unique words in captions: 8488
+Average caption length: 11.78 words
+Average image size: 397.25 x 457.87 pixels
+8091 images in dataset
+count    8091.0
+mean        5.0
+std         0.0
+min         5.0
+25%         5.0
+50%         5.0
+75%         5.0
+max         5.0
+dtype: float64
+Model will be saved as: 20251123_clip_cuda_sub-size-full_bs32_ep30_lr5e-05_test-run
+Total Hyperparameter combinations to try: 9
+
+=== Training 20251123_HT_lr1e-05_bs16_ep200 | run 1/9 ===
+Epoch 1/200 | Train Loss: 2.6288 | Val Loss: 2.6099 | MeanSim: 0.1373 | R@1: 0.001 | Epoch time: 213.20s

@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/ADL_multimodel_retrieval.py", line 105, in <module>
+    import matplotlib.pyplot as plt # for visualization
+ModuleNotFoundError: No module named 'matplotlib'
