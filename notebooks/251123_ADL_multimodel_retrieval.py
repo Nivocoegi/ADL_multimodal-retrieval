@@ -160,8 +160,8 @@ finetuning = False
 save_model = True
 
 # ========= DataLoader and subset parameters
-use_subset = False
-subset_size = "-full"  # Number of samples in subset
+use_subset = True
+subset_size = 10  # Number of samples in subset
 batch_size = 32 # for DataLoader
 num_workers = 0  # for DataLoader # 0 for local; 4 for cluster
 
@@ -461,7 +461,7 @@ else:
 
 # optimizer, loss function and other parameters
 loss_fn = nn.CrossEntropyLoss()
-epochs = 30
+epochs = 2
 lr = 5e-5
 batch_size = batch_size
 
