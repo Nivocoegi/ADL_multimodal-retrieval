@@ -1,7 +1,0 @@
-/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/scripts/train_job.sh: line 13: /net/home/vognic01/miniconda3/etc/profile.d/conda.sh: No such file or directory
-/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/scripts/train_job.sh: line 22: conda: command not found
-/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/scripts/train_job.sh: line 28: conda: command not found
-Traceback (most recent call last):
-  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/ADL_multimodel_retrieval.py", line 74, in <module>
-    import numpy as np
-ModuleNotFoundError: No module named 'numpy'

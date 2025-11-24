@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/251123_ADL_multimodel_retrieval.py", line 73, in <module>
-    import numpy as np
-ModuleNotFoundError: No module named 'numpy'

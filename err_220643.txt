@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/ADL_multimodel_retrieval.py", line 433, in <module>
-    model = CLIPModel.from_pretrained(local, local_files_only=True, use_safetensors=True)
-  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/modeling_utils.py", line 1635, in from_pretrained
-    f"Error no file named {WEIGHTS_NAME} found in directory {pretrained_model_name_or_path} but "
-OSError: Error no file named pytorch_model.bin found in directory /cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/models/clip-vit-base-patch32 but there is a file for Flax weights. Use `from_flax=True` to load this model from those weights.

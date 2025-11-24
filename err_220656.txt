@@ -1,9 +1,0 @@
-ftfy or spacy is not installed using BERT BasicTokenizer instead of ftfy.
-Traceback (most recent call last):
-  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/ADL_multimodel_retrieval.py", line 439, in <module>
-    processor = CLIPProcessor(tokenizer=tokenizer, feature_extractor=None)
-  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/models/clip/processing_clip.py", line 39, in __init__
-    super().__init__(feature_extractor, tokenizer)
-  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/processing_utils.py", line 84, in __init__
-    f"Received a {type(arg).__name__} for argument {attribute_name}, but a {class_name} was expected."
-ValueError: Received a NoneType for argument feature_extractor, but a CLIPFeatureExtractor was expected.
