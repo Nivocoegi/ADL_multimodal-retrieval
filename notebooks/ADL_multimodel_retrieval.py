@@ -147,6 +147,8 @@ IMG_DIR = DATA_DIR / "Images"
 CAPTIONS_FILE = DATA_DIR / "flickr8k_captions.csv"
 RUNS_DIR = PROJECT_ROOT / "runs"
 
+run_name = "ft_training_no-earlystop"
+
 
 # In[19]:
 
@@ -480,7 +482,7 @@ model.to(DEVICE)
 model.train()
 
 # prepare filename for saving
-run_name = "test-run"
+run_name = run_name
 filename = compile_filename(subset_size, DEVICE, batch_size, epochs, lr, run_name)
 print(f"Model will be saved as: {filename}")
 
@@ -633,7 +635,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
 
 # train model
 if not hyperparameter_tuning:
-    logs = train_model(model, train_loader, val_loader, loss_fn, optimizer, epochs, filename, patience=5)
+    logs = train_model(model, train_loader, val_loader, loss_fn, optimizer, epochs, filename, patience=50)
 
 
 # ## 4.3 Saving the Model and export Data
