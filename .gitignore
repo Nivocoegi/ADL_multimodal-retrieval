@@ -1,6 +1,6 @@
 # Daten und Modelle
-data/raw/
-data/processed/
+models/
+data/
 *.jpg
 *.png
 *.pt
