@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/ADL_multimodel_retrieval.py", line 436, in <module>
+    model = CLIPModel.from_pretrained(model_path, local_files_only=True, use_safetensors=True)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/modeling_utils.py", line 1843, in from_pretrained
+    model = cls(config, *model_args, **model_kwargs)
+TypeError: __init__() got an unexpected keyword argument 'use_safetensors'
