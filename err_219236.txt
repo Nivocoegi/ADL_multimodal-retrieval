@@ -1,0 +1,7 @@
+Lmod hat den folgenden Fehler erkannt: Diese Module existieren, aber können
+nicht wie gewünscht geladen werden: "gcc/9.4.0-pe5.34"
+   Versuchen Sie: "module spider gcc/9.4.0-pe5.34" um anzuzeigen, wie die
+Module geladen werden.
+
+
+

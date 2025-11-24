@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/ADL_multimodel_retrieval.py", line 438, in <module>
+    processor = CLIPProcessor.from_pretrained(tokenizer_path, local_files_only=True)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/processing_utils.py", line 186, in from_pretrained
+    args = cls._get_arguments_from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/processing_utils.py", line 230, in _get_arguments_from_pretrained
+    args.append(attribute_class.from_pretrained(pretrained_model_name_or_path, **kwargs))
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/tokenization_utils_base.py", line 1787, in from_pretrained
+    **kwargs,
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/tokenization_utils_base.py", line 1915, in _from_pretrained
+    tokenizer = cls(*init_inputs, **init_kwargs)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/models/clip/tokenization_clip_fast.py", line 95, in __init__
+    **kwargs,
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/tokenization_utils_fast.py", line 109, in __init__
+    fast_tokenizer = TokenizerFast.from_file(fast_tokenizer_file)
+Exception: data did not match any variant of untagged enum ModelWrapper at line 245078 column 3

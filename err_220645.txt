@@ -1,0 +1,40 @@
+Traceback (most recent call last):
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/configuration_utils.py", line 604, in _get_config_dict
+    user_agent=user_agent,
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/utils/hub.py", line 290, in cached_path
+    local_files_only=local_files_only,
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/utils/hub.py", line 585, in get_from_cache
+    http_get(url_to_download, temp_file, proxies=proxies, resume_size=resume_size, headers=headers)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/utils/hub.py", line 423, in http_get
+    r = requests.get(url, stream=True, proxies=proxies, headers=headers)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/requests/api.py", line 75, in get
+    return request('get', url, params=params, **kwargs)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/requests/api.py", line 61, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/requests/sessions.py", line 515, in request
+    prep = self.prepare_request(req)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/requests/sessions.py", line 453, in prepare_request
+    hooks=merge_hooks(request.hooks, self.hooks),
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/requests/models.py", line 318, in prepare
+    self.prepare_url(url, params)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/requests/models.py", line 392, in prepare_url
+    raise MissingSchema(error)
+requests.exceptions.MissingSchema: Invalid URL '/api/resolve-cache/models/openai/clip-vit-base-patch32/3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268/config.json?%2Fopenai%2Fclip-vit-base-patch32%2Fresolve%2Fmain%2Fconfig.json=&etag=%22a2a88b96561196777ca173b15309ea859f4d2ce0%22': No scheme supplied. Perhaps you meant http:///api/resolve-cache/models/openai/clip-vit-base-patch32/3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268/config.json?%2Fopenai%2Fclip-vit-base-patch32%2Fresolve%2Fmain%2Fconfig.json=&etag=%22a2a88b96561196777ca173b15309ea859f4d2ce0%22?
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/ADL_multimodel_retrieval.py", line 99, in <module>
+    import utils
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/utils.py", line 28, in <module>
+    model = CLIPModel.from_pretrained(model_name)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/modeling_utils.py", line 1595, in from_pretrained
+    **kwargs,
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/configuration_utils.py", line 521, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/configuration_utils.py", line 548, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/.venv/lib64/python3.6/site-packages/transformers/configuration_utils.py", line 630, in _get_config_dict
+    f"We couldn't connect to '{HUGGINGFACE_CO_RESOLVE_ENDPOINT}' to load this model, couldn't find it in the cached "
+OSError: We couldn't connect to 'https://huggingface.co' to load this model, couldn't find it in the cached files and it looks like openai/clip-vit-base-patch32 is not the path to a directory containing a {configuration_file} file.
+Checkout your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
