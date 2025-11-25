@@ -69,7 +69,7 @@
 # ========== Base Modules
 from datetime import datetime
 import time
-
+import math
 import numpy as np
 from pathlib import Path
 import os
@@ -98,6 +98,7 @@ from my_dataset import Flickr8kDataset
 import utils
 importlib.reload(utils)
 from utils import *
+
 
 # ========== Visualization Modules
 from PIL import Image # for image processing
@@ -147,7 +148,7 @@ IMG_DIR = DATA_DIR / "Images"
 CAPTIONS_FILE = DATA_DIR / "flickr8k_captions.csv"
 RUNS_DIR = PROJECT_ROOT / "runs"
 
-run_name = "ft_training_no-earlystop"
+run_name = "x_bs_temp"
 
 
 # In[19]:
@@ -164,7 +165,7 @@ save_model = True
 # ========= DataLoader and subset parameters
 use_subset = False
 subset_size = "-full"  # Number of samples in subset
-batch_size = 32 # for DataLoader
+batch_size = 64 # for DataLoader
 num_workers = 0  # for DataLoader # 0 for local; 4 for cluster
 
 
@@ -448,6 +449,12 @@ test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, nu
 model_name = "openai/clip-vit-base-patch32"
 model = CLIPModel.from_pretrained(model_name)
 processor = CLIPProcessor.from_pretrained(model_name)
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Temperature
+temp = 0.12
+model.logit_scale.data = torch.tensor(math.log(1 / temp)).to(DEVICE)
+model.logit_scale.requires_grad = False
 
 if not finetuning:
     # fine-tuning entire model
@@ -468,7 +475,7 @@ else:
 loss_fn = nn.CrossEntropyLoss()
 epochs = 500
 lr = 1e-5
-batch_size = 32
+batch_size = batch_size
 
 if finetuning:
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=lr)
@@ -477,7 +484,6 @@ else:
 
 
 # move model to device
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(DEVICE)
 model.train()
 
@@ -644,7 +650,6 @@ if not hyperparameter_tuning:
 
 
 # save logs to csv
-if not hyperparameter_tuning:
     if save_model:
         model_file = RUNS_DIR / filename / f"{filename}_logs.csv"
         logs.to_csv(model_file, index=False)
@@ -655,7 +660,6 @@ if not hyperparameter_tuning:
 
 
 # plot training results
-if not hyperparameter_tuning:
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.plot(logs["epoch"], logs["train_loss"], label="Train Loss")
     ax.plot(logs["epoch"], logs["val_loss"], label="Validation Loss")
@@ -674,7 +678,6 @@ if not hyperparameter_tuning:
 
 
 # plot recalls
-if not hyperparameter_tuning:
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.plot(logs["epoch"], logs["recall@1"], label="Recall@1")
     ax.plot(logs["epoch"], logs["recall@5"], label="Recall@5")

@@ -186,7 +186,8 @@ train_full_model = False
 # ========= Test model flag
 test_model = False
 
-
+# ========= Run name for saving
+run_name = "x_bs_temp0.12"
 # ## 1.3 Data Loading
 # 
 
@@ -447,11 +448,12 @@ test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, nu
 model_name = "openai/clip-vit-base-patch32"
 model = CLIPModel.from_pretrained(model_name)
 processor = CLIPProcessor.from_pretrained(model_name)
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Temperature
-temp = 0.12
-model.logit_scale.data = torch.tensor(math.log(1 / temp)).to(DEVICE)
-model.logit_scale.requires_grad = False  # falls du sie einfrieren willst
+# temp = 0.12
+# model.logit_scale.data = torch.tensor(math.log(1 / temp)).to(DEVICE)
+# model.logit_scale.requires_grad = False  # falls du sie einfrieren willst
 
 if not finetuning:
     # fine-tuning entire model
@@ -470,8 +472,8 @@ else:
 
 # optimizer, loss function and other parameters
 loss_fn = nn.CrossEntropyLoss()
-epochs = 30
-lr = 5e-5
+epochs = 200
+lr = 1e-5
 batch_size = batch_size
 
 if finetuning:
@@ -481,12 +483,11 @@ else:
 
 
 # move model to device
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(DEVICE)
 model.train()
 
 # prepare filename for saving
-run_name = "test-run"
+run_name = run_name
 filename = compile_filename(subset_size, DEVICE, batch_size, epochs, lr, run_name)
 print(f"Model will be saved as: {filename}")
 
