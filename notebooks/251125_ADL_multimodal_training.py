@@ -451,9 +451,9 @@ processor = CLIPProcessor.from_pretrained(model_name)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Temperature
-# temp = 0.12
-# model.logit_scale.data = torch.tensor(math.log(1 / temp)).to(DEVICE)
-# model.logit_scale.requires_grad = False  # falls du sie einfrieren willst
+temp = 0.12
+model.logit_scale.data = torch.tensor(math.log(1 / temp)).to(DEVICE)
+model.logit_scale.requires_grad = False  # falls du sie einfrieren willst
 
 if not finetuning:
     # fine-tuning entire model
