@@ -187,7 +187,7 @@ train_full_model = False
 test_model = False
 
 # ========= Run name for saving
-run_name = "x_bs_temp0.12"
+run_name = "prog_unfreez"
 # ## 1.3 Data Loading
 # 
 
