@@ -503,7 +503,7 @@ print(f"Model will be saved as: {filename}")
 # In[48]:
 
 
-def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs, filename, current_stage, patience=5):
+def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs, filename, current_stage, unfreeze_every,  patience=5):
 
     best_val_loss = float('inf')
     best_model_state = None
