@@ -1,0 +1,47 @@
+Python executable:
+Python 3.10.19
+GPU Info:
+Tue Nov 25 21:40:40 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.161.07             Driver Version: 535.161.07   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA L40S                    On  | 00000000:0B:00.0 Off |                    0 |
+| N/A   34C    P8              35W / 350W |      0MiB / 46068MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
+Dataset contains 40455 image-caption pairs.
+Number of unique words in captions: 8488
+Average caption length: 11.78 words
+Average image size: 397.25 x 457.87 pixels
+8091 images in dataset
+count    8091.0
+mean        5.0
+std         0.0
+min         5.0
+25%         5.0
+50%         5.0
+75%         5.0
+max         5.0
+dtype: float64
+Model will be saved as: 20251125_clip_cuda_sub-size-full_bs64_ep200_lr1e-05_x_bs_temp0.12
+Epoch 1/200 | Train Loss: 4.1064 | Val Loss: 3.9834 | MeanSim: 0.1592 | R@1: 0.001 | Epoch time: 176.21s
+Epoch 2/200 | Train Loss: 3.9050 | Val Loss: 3.8821 | MeanSim: 0.1423 | R@1: 0.002 | Epoch time: 156.69s
+Epoch 3/200 | Train Loss: 3.7347 | Val Loss: 3.7852 | MeanSim: 0.1236 | R@1: 0.003 | Epoch time: 158.68s
+Epoch 4/200 | Train Loss: 3.5652 | Val Loss: 3.7026 | MeanSim: 0.1181 | R@1: 0.002 | Epoch time: 158.19s
+Epoch 5/200 | Train Loss: 3.4346 | Val Loss: 3.6474 | MeanSim: 0.1144 | R@1: 0.003 | Epoch time: 158.74s
+Epoch 6/200 | Train Loss: 3.3363 | Val Loss: 3.6183 | MeanSim: 0.1154 | R@1: 0.003 | Epoch time: 158.41s
+Epoch 7/200 | Train Loss: 3.2462 | Val Loss: 3.6139 | MeanSim: 0.1203 | R@1: 0.003 | Epoch time: 160.01s
+Epoch 8/200 | Train Loss: 3.1873 | Val Loss: 3.5955 | MeanSim: 0.1187 | R@1: 0.003 | Epoch time: 159.32s
+Epoch 9/200 | Train Loss: 3.1249 | Val Loss: 3.5714 | MeanSim: 0.1209 | R@1: 0.003 | Epoch time: 159.40s

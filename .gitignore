@@ -1,6 +1,7 @@
 # Daten und Modelle
 models/
 data/
+data_2/
 *.jpg
 *.png
 *.pt

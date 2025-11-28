@@ -163,7 +163,7 @@ save_model = True
 # ========= DataLoader and subset parameters
 use_subset = False
 subset_size = "-full"  # Number of samples in subset
-batch_size = 64 # for DataLoader
+batch_size = 128 # for DataLoader
 num_workers = 0  # for DataLoader # 0 for local; 4 for cluster
 
 
