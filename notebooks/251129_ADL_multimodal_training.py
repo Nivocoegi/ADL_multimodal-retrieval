@@ -553,7 +553,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         # compute embeddings
         with torch.no_grad():
             for images, texts in dataloader:
-                inputs = processor(text=texts, images=images, padding=True, trunction=True, return_tensors="pt", padding=True).to(DEVICE)
+                inputs = processor(text=texts, images=images, padding=True, trunction=True, return_tensors="pt").to(DEVICE)
 
                 img = model.get_image_features(pixel_values=inputs["pixel_values"]) # get image features
                 txt = model.get_text_features(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"]) # get text features
