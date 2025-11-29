@@ -142,7 +142,7 @@ except NameError:
     # fallback for Jupyter notebooks
     PROJECT_ROOT = find_project_root()
 
-# ============= PROJECT_ROOT = Path(__file__).resolve().parents[1]
+# ============= set data paths
 DATA_DIR = PROJECT_ROOT / "data"
 IMG_DIR = DATA_DIR / "Images"
 CAPTIONS_FILE = DATA_DIR / "flickr8k_captions.csv"

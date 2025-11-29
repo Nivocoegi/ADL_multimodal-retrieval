@@ -4,7 +4,9 @@
 # # Advacned Deep Learning - Multimodal Retrieval with CLIP on Flickr8k
 # 
 # Author: Nicolas Vogel
+# 
 # Submission date: 15.12.2025
+# 
 # course: Advanced Deep Learning (AS 2025)
 # 
 # ## Sections
@@ -13,40 +15,41 @@
 # 2. Data Analysis and Visualization
 # 3. Data Preprocessing
 # 4. Model Building and Training
-# 5. Evaluation
+# 5. Evaluation (in separate file)
 # 6. Final Remarks
 # 
 # # 0. Introduction
 # ## 0.1 Taks
-# In this project a multimodal retrieval system is implemented using the CLIP model on the Flickr8k dataset. The goal is to enable retrieval of images based on text queries and vice versa. The project involves data analysis, preprocessing, model fine-tuning, and evaluation of retrieval performance.
+# The objective of this project is to develop and evaluate a multimodal retrieval system capable of matching images and text descriptions. The system is built using a pretrained CLIP model and fine-tuned on the Flickr8k dataset to improve cross-modal alignment between visual and textual representations.
 # 
-# In a frist step a pretrained model (ClIP) is finetuned on the Flickr8k dataset. In a second step the model is tested with various text and image queries to evaluate its retrieval capabilities. The performance is measured using metrics such as Recall@K and mean similiarity.
+# The task includes preparing and analyzing the dataset, implementing preprocessing pipelines, and adapting the CLIP architecture for efficient fine-tuning. A custom training loop is used to optimize the model for the retrieval task, including loss computation for image–text matching and various training strategies such as freezing, unfreezing, and progressive unfreezing of model components.
+# 
+# After training, the system is evaluated through retrieval experiments where text queries are used to retrieve relevant images, and images are used to retrieve matching captions. Performance is assessed using standard retrieval metrics such as Recall@K and mean similarity, allowing quantitative comparison of different training configurations and hyperparameters.
+# 
+# The final system aims to demonstrate how effectively a pretrained multimodal model can be adapted to a smaller dataset and how design choices in training influence retrieval performance.
 # 
 # 
-# ## 0.2 Related Work and References
+# ## 0.2 Related Work
 # ### CLIP
-# CLIP was
+# CLIP was created in 2021 by Radford and his team from OpenAI. CLIP learns visual models from natural language by training an image encoder and a text encoder together to predict the correct image and caption for each other. For training, they used a huge set of data from the internet – about 400 million image-text pairs. The model makes a shared space for both types. The authors show that the model can describe new visual concepts using natural language in a zero-shot manner. This means the encoder creates a linear classifier, which then predicts captions for images it hasn't seen before [1].
 # 
-# Learning Transferable Visual Models From Natural Language Supervision
+# ### CLIP-branches
+# One of the most important things CLIP can do, made possible by the multimodal embedding space, is finding text and images. Traditional image retrieval systems usually use something called a "nearest neighbour search algorithm" to find images based on the features they have. CLIP-based systems use this shared embedding space to let users search for images using text queries, or vice versa. However, the results of a traditional nearest neighbours search are often not very precise or relevant, which can lead to answers that are not very good. These answers might include objects that are not relevant or include examples that are not similar. Lülf and his team looked at this issue and tried to improve how accurate and complete CLIP-based retrieval systems are.
+# The developed CLIP-Branches is a new search engine that searches for text and images. It works by getting people to interact with the search engine to give feedback on how relevant the results are. This approach lets users improve their search by giving them positive and negative examples, which leads to better results that look at all the data, not just the first results [2].
 # 
-# 
-# 
-# 
-# 
-# The underlying model used in this project is CLIP (Contrastive Language-Image Pretraining) developed by OpenAI. CLIP is a powerful multimodal model that learns to associate images and text by training on a large dataset of image-caption pairs. The model uses a contrastive learning approach to align visual and textual representations in a shared embedding space. it is trained on a diverse dataset of 400 million image-text pairs collected from the internet. This extensive training allows CLIP to generalize well to various downstream tasks, including image classification, object detection, and multimodal retrieval [1].
 # 
 # ### Flickr8k Dataset
-# The dataset contains 8,000 images collected from Flickr, each paired with five different captions. The images cover a wide range of scenes and objects, especially outdoor activities, people, and animals as later can be seen in the analysis of the dataset. The captions are human-generated and provide descriptive information about the content of the images [2].
+# The dataset contains 8,000 images collected from Flickr, each paired with five different captions. The images cover a wide range of scenes and objects, especially outdoor activities, people, and animals as later can be seen in the analysis of the dataset. The captions are human-generated and provide descriptive information about the content of the images [3].
 # 
 # 
 # 
 # 
 # 
+# [1] A. Radford et al., „Learning Transferable Visual Models From Natural Language Supervision“, 26. Februar 2021, arXiv: arXiv:2103.00020. doi: 10.48550/arXiv.2103.00020.
 # 
+# [2] C. Lülf, D. M. L. Martins, M. A. V. Salles, Y. Zhou, und F. Gieseke, „CLIP-Branches: Interactive Fine-Tuning for Text-Image Retrieval“, 19. Juni 2024, arXiv: arXiv:2406.13322. doi: 10.48550/arXiv.2406.13322.
 # 
-# [1] C. Lülf, D. M. L. Martins, M. A. V. Salles, Y. Zhou, und F. Gieseke, „CLIP-Branches: Interactive Fine-Tuning for Text-Image Retrieval“, 19. Juni 2024, arXiv: arXiv:2406.13322. doi: 10.48550/arXiv.2406.13322.
-# 
-# [2] https://github.com/Avaneesh40585/Flickr8k-Dataset
+# [3] https://github.com/Avaneesh40585/Flickr8k-Dataset
 # 
 # 
 # ## 0.3 Sumbission Data
@@ -61,14 +64,14 @@
 # 
 # ## 1.1 Modules and helper functions
 
-# In[33]:
+# In[13]:
 
 
 # ======================= Module Imports ============================= #
 
 # ========== Base Modules
-from datetime import datetime
-import time
+from datetime import datetime # for naming files with date
+import time # for measuring training time
 import math
 import numpy as np
 from pathlib import Path
@@ -79,23 +82,23 @@ import pandas as pd # for data handling
 import re # for regex operations to analyze captions
 from collections import Counter # to count word frequencies
 from sklearn.model_selection import train_test_split # for splitting dataset
-import itertools
+import itertools # for hyperparameter tuning combinations
 
 # ========== Deep Learning Modules
-import torch
+import torch #
 from torch import nn, optim
 from torch.utils.data import DataLoader
-from tqdm import tqdm
+from tqdm import tqdm # for progress bars
 
 # ========== Models
-from transformers import CLIPProcessor, CLIPModel
+from transformers import CLIPProcessor, CLIPModel # for CLIP model and processor
 
 
 # ========== Custom Module for dataloader
-import importlib
+import importlib # for reloading custom modules
 import my_dataset
 importlib.reload(my_dataset)
-from my_dataset import Flickr8kDataset
+from my_dataset import Flickr8kDataset # Custom Dataset class
 import utils
 importlib.reload(utils)
 from utils import *
@@ -105,7 +108,7 @@ from PIL import Image # for image processing
 import matplotlib.pyplot as plt # for visualization
 
 
-# In[34]:
+# In[14]:
 
 
 # ================== Helperfunctions ======================== #
@@ -121,6 +124,7 @@ def find_project_root(start: Path = Path.cwd()):
 
 # ========== compile model filename
 def compile_filename(subset_size, device, batch, epochs, lr, description):
+    """Compile a filename for saving the model based on training parameters."""
     today = datetime.now().strftime("%Y%m%d")
     file_name = f"{today}_clip_{device}_sub-size{subset_size}_bs{batch}_ep{epochs}_lr{lr}_{description}"
     return file_name
@@ -130,7 +134,7 @@ def compile_filename(subset_size, device, batch, epochs, lr, description):
 # ## 1.2 Funcitonality Pre-settings
 # Here paths and flags are set for data loading, model saving, and training configurations.
 
-# In[35]:
+# In[15]:
 
 
 # ===================== Path Settings ========================= #
@@ -142,14 +146,14 @@ except NameError:
     # fallback for Jupyter notebooks
     PROJECT_ROOT = find_project_root()
 
-# ============= PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = PROJECT_ROOT / "data"
+# ============= set data paths
+DATA_DIR = PROJECT_ROOT / "data_2"
 IMG_DIR = DATA_DIR / "Images"
-CAPTIONS_FILE = DATA_DIR / "flickr8k_captions.csv"
+CAPTIONS_FILE = DATA_DIR / "flickr30k_captions.csv"
 RUNS_DIR = PROJECT_ROOT / "runs"
 
 
-# In[36]:
+# In[16]:
 
 
 # ==================== Flags ======================= #
@@ -165,7 +169,6 @@ use_subset = False
 subset_size = "-full"  # Number of samples in subset
 batch_size = 64 # for DataLoader
 num_workers = 0  # for DataLoader # 0 for local; 4 for cluster
-
 
 # ========= Plotting parameters
 save_plot = True
@@ -183,15 +186,16 @@ if cluster:
 # ======== Train full model flag
 train_full_model = False
 
-# ========= Test model flag
-test_model = False
 
-# ========= Run name for saving
-run_name = "prog_unfreez"
+# ========= Progressive unfreezing flag
+progressive_unfreeze = True
+
+
 # ## 1.3 Data Loading
 # 
+# Here the data is loaded from the Flickr8k dataset for further analysis and model training.
 
-# In[37]:
+# In[17]:
 
 
 # ================== Load Dataset ====================== #
@@ -211,16 +215,16 @@ captions.head()
 # 
 # ## 2.1 Examples
 
-# In[38]:
+# In[18]:
 
 
-# plot some random images with captions as example
+# ========== Visualize Examples ====================== #
+# ========== plot some random images with captions as example
 fig, axes = plt.subplots(3, 3, figsize=(20, 5))
 
 # random seed
 # np.random.seed(42)
 
-# plot random samples
 for ax in axes.ravel():
     row = captions.sample(1).iloc[0]
     img = Image.open(os.path.join(IMG_DIR, row['filename']))
@@ -234,15 +238,15 @@ plt.show()
 
 # ## 2.2 Image and Caption analysis
 
-# In[39]:
+# In[19]:
 
 
-# captions per image
+# ============ Check number of Captions per Image ============= #
 
-captions_per_image = captions.groupby("filename").size()
+# ========== plot histogram of number of captions per image
+captions_per_image = captions.groupby("filename").size() # count captions per image
 fig, ax = plt.subplots(figsize=(10, 5))
-ax.hist(captions_per_image, bins=range(1, captions_per_image.max()+
-2), align='left', edgecolor='black')
+ax.hist(captions_per_image, bins=range(1, captions_per_image.max()+2), align='left', edgecolor='black') # plot histogram
 ax.set_xlabel("Number of Captions per Image")
 ax.set_ylabel("Frequency")
 ax.set_title("Distribution of Captions per Image")
@@ -251,35 +255,33 @@ plt.show()
 
 
 
-# In[40]:
+# As we can see, each image in the Flickr8k dataset has exactly 5 captions, which is consistent with the dataset's design.
+
+# In[20]:
 
 
-# combine all captions into one large text
-text = " ".join(captions["caption"].astype(str)).lower()
+# ============ Word Frequency Analysis in Captions ============= #
 
-# extract words using regex
-words = re.findall(r"\b\w+\b", text)
+# ======= Perform word frequency analysis
+text = " ".join(captions["caption"].astype(str)).lower() # combine all captions into one large text
+words = re.findall(r"\b\w+\b", text) # combine all captions into one large text
 
-# count word frequencies
+# ========== count word frequencies and save top 60 and least 60
 freq = Counter(words)
+top60 = freq.most_common(60) # get top 60 most common words
+least60 = freq.most_common()[:-61:-1] # get least 60 common words
 
-# get the 30 most common and 30 least common words
-top30 = freq.most_common(60)
-least30 = freq.most_common()[:-61:-1]
-
-# print(top30)
-
-# Plot the results
+# ======= Plot the results
 fig, axes = plt.subplots(2, 1, figsize=(12, 5))
 
 # top: Top 30
-axes[0].bar([w for w,_ in top30], [c for _,c in top30])
+axes[0].bar([w for w,_ in top60], [c for _,c in top60])
 axes[0].set_title("Top 60")
 axes[0].set_ylabel("Frequency")
 axes[0].tick_params(axis='x', rotation=90)
 
 # bottom: Least 30
-axes[1].bar([w for w,_ in least30], [c for _,c in least30])
+axes[1].bar([w for w,_ in least60], [c for _,c in least60])
 axes[1].set_title("Least 60")
 axes[1].set_ylabel("Frequency")
 axes[1].tick_params(axis='x', rotation=90)
@@ -288,20 +290,23 @@ plt.tight_layout()
 plt.show()
 
 
-# In[41]:
+# 
+
+# In[21]:
 
 
+# =========== Word Category Analysis in Top 60 Words ============= #
 # closer look at nouns, verbs, adjectives in top 60 words
 # manually categorized based on common English usage
 
-# top 60 words categorized
-top60_nouns = [('dog', 8138), ('man', 7274), ('boy', 3581), ('woman', 3402), ('girl', 3328), ('people', 2883), ('water', 2790), ('dogs', 2125), ('shirt', 1962), ('ball', 1783), ('grass', 1622), ('snow', 1547), ('child', 1545), ('person', 1542), ('field', 1283), ('group', 1218), ('children', 1156)]
+# ====== top 60 words categorized
+top60_nouns = [('dog', 8138), ('man', 7274), ('boy', 3581), ('woman', 3402), ('girl', 3328), ('people', 2883), ('water', 2790), ('dogs', 2125), ('shirt', 1962), ('ball', 1783), ('grass', 1622), ('snow', 1547), ('child', 1545), ('person', 1542), ('field', 1283), ('group', 1218), ('children', 1156)] # nouns
 
-top60_verbs = [('is', 9345), ('are', 3504), ('wearing', 3062), ('running', 2073), ('playing', 2008), ('standing', 1787), ('jumping', 1473), ('sitting', 1368), ('holding', 1324), ('walking', 1165)]
+top60_verbs = [('is', 9345), ('are', 3504), ('wearing', 3062), ('running', 2073), ('playing', 2008), ('standing', 1787), ('jumping', 1473), ('sitting', 1368), ('holding', 1324), ('walking', 1165)] # verbs
 
-top60_adj = [('white', 3959), ('black', 3848), ('red', 2691), ('brown', 2578), ('blue', 2279), ('little', 1768), ('small', 1278), ('large', 1236), ('green', 1234), ('yellow', 1217)]
+top60_adj = [('white', 3959), ('black', 3848), ('red', 2691), ('brown', 2578), ('blue', 2279), ('little', 1768), ('small', 1278), ('large', 1236), ('green', 1234), ('yellow', 1217)] # adjectives
 
-# Plot the results
+# ====== Plot the results
 fig, axes = plt.subplots(3, 1, figsize=(12, 5))
 
 # top: Top 30
@@ -326,46 +331,61 @@ plt.tight_layout()
 plt.show()
 
 
-# In[42]:
+# The most common words in the captions are primarily function words such as "the", "is", "a", and "in", which are essential for sentence structure but do not carry significant semantic content. Content words like "dog", "man", and "woman" also appear frequently, reflecting common subjects in the images. The least common words tend to be more specific nouns and adjectives that describe particular objects or attributes, indicating a long tail of less frequently mentioned concepts in the dataset.
+
+# In[23]:
 
 
-# number of unique words
+# ======= Generall Dataset Statistics ======= #
+
+# ===== number of unique words
 num_unique_words = len(freq)
 print(f"Number of unique words in captions: {num_unique_words}")
 
-
-# In[43]:
-
-
-# average caption length
+# ===== average caption length
 avg_caption_length = sum(len(caption.split()) for caption in captions["caption"]) / dataset_length
 print(f"Average caption length: {avg_caption_length:.2f} words")
 
-
-# In[44]:
-
-
-# image proerties
-image_sizes = []
-for filename in captions["filename"].unique():
-    img_path = os.path.join(IMG_DIR, filename)
-    with Image.open(img_path) as img:
-        image_sizes.append(img.size)
-widths, heights = zip(*image_sizes)
-avg_width = sum(widths) / len(widths)
-avg_height = sum(heights) / len(heights)
-print(f"Average image size: {avg_height:.2f} x {avg_width:.2f} pixels")
+# ===== plot caption length distribution
+caption_lengths = [len(caption.split()) for caption in captions["caption"]]
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.hist(caption_lengths, bins=range(1, max(caption_lengths)+2), align='left', edgecolor='black')
+ax.set_xlabel("Caption Length (words)")
+ax.set_ylabel("Frequency")
+ax.set_title("Distribution of Caption Lengths")
+plt.xticks(range(1, max(caption_lengths)+1))
+plt.show()
 
 
+
+# Most of the captions in the Flickr8k dataset are relatively short, with an average length of around 12 words. The distribution of caption lengths shows that while many captions are concise, there is a significant number of longer captions that provide more detailed descriptions of the images. This variability in caption length reflects the diverse ways in which different annotators describe the same image, ranging from brief phrases to more elaborate sentences.
+
+# In[24]:
+
+
+# ======= Image Dimension Analysis ======= #
+
+# ===== image proerties
+image_sizes = [] # list to store image sizes
+for filename in captions["filename"].unique(): # loop over unique images
+    img_path = os.path.join(IMG_DIR, filename) # # get image path
+    with Image.open(img_path) as img: # open image
+        image_sizes.append(img.size) # append (width, height)
+widths, heights = zip(*image_sizes) # unzip widths and heights
+avg_width = sum(widths) / len(widths) # calculate average width
+avg_height = sum(heights) / len(heights) # calculate average height
+print(f"Average image size: {avg_height:.2f} x {avg_width:.2f} pixels") # print average size
+
+# ===== plot image dimension distribution
 fig, ax = plt.subplots(1, 2, figsize=(12,4))
-ax[0].hist(heights, bins=30)
+ax[0].hist(heights, bins=30,  edgecolor='black')
 ax[0].axvline(avg_height, linestyle="--", color = 'red')
 ax[0].set_xlabel("height (px)")
 ax[0].set_ylabel("frequency")
 ax[0].set_title("Distribution of Image Heights")
 ax[0].legend(["average height"])
 
-ax[1].hist(widths, bins=30)
+ax[1].hist(widths, bins=30,  edgecolor='black')
 ax[1].axvline(avg_width, linestyle="--", color = 'red')
 ax[1].set_xlabel("width (px)")
 ax[1].set_ylabel("frequency")
@@ -376,56 +396,58 @@ plt.tight_layout()
 plt.show()
 
 
+# The images in the Flickr8k dataset exhibit a wide range of dimensions, with heights and widths varying significantly across the dataset. The average image size is approximately 400 pixels in height and 450 pixels in width, indicating that while some images are relatively small, others are much larger. This variability in image size reflects the diverse nature of the images collected from Flickr, which include different scenes, objects, and compositions.
+# Most of the images do have widths around 500 pixels, the hight is more variable 330 and 500 pixels seem to be common sizes.
+
 # # 3 Data Preprocessing
 # 
 # ## 3.1 Subset
+# For quicker experimentation, a subset of the dataset can be used. Here we randomly select a specified number of unique images and their corresponding captions to create a smaller dataset for training and evaluation.
+# To check the subset some statistics are printed out.
 
-# In[45]:
+# In[13]:
 
 
-# subset option
+# ================= Create Subset ====================== #
+# ======= subset option
 if use_subset:
     unique_images = captions['filename'].unique() # get unique image filenames
     chosen = pd.Series(unique_images).sample(n=subset_size, random_state=42) # randomly choose a subset
     subset = captions[captions['filename'].isin(chosen)].reset_index(drop=True)# filter captions to only include chosen images
     captions = subset.copy()  # update captions to only include subset
 
-# print dataset info
+# ======= print dataset info
 print(captions["filename"].nunique(), "images in dataset")  # number of unique images in subset
 print(captions.groupby("filename").size().describe())# number of captions per image in subset
 # captions.head() # display first few entries of subset
 
 
 # ## 3.2 Dataloader
+# Here the dataset is split into training, validation, and test sets. Custom datasets and dataloaders are created for each split to facilitate model training and evaluation.
 
-# In[46]:
+# In[14]:
 
 
-# create new csv file for subset
-# date = datetime.now().strftime("%Y%m%d")
-# subset_captions_file = DATA_DIR / f"{date}_flickr8k_captions_subset_{subset_size}imgs.csv"
-# captions.to_csv(subset_captions_file, sep=";", index=False)
-# CAPTIONS_FILE = subset_captions_file
+# ================= Data Splitting and Dataloaders ====================== #
 
-# get unique images for proper splitting
+# ====== get unique images for proper splitting
 images = captions["filename"].unique()
 
-# split into train, val, test
+# ====== split into train, val, test
 train_imgs, test_imgs = train_test_split(images, test_size=0.2, random_state=42)
 val_imgs, test_imgs = train_test_split(test_imgs, test_size=0.5, random_state=42)
 
-# filter captions dataframe based on image splits
+# ====== filter captions dataframe based on image splits
 train_df = captions[captions["filename"].isin(train_imgs)]
 val_df   = captions[captions["filename"].isin(val_imgs)]
 test_df  = captions[captions["filename"].isin(test_imgs)]
 
-
-# create datasets
+# ====== create datasets
 train_dataset = Flickr8kDataset(str(IMG_DIR), train_df)
 val_dataset   = Flickr8kDataset(str(IMG_DIR), val_df)
 test_dataset  = Flickr8kDataset(str(IMG_DIR), test_df)
 
-# create dataloaders
+# ====== create dataloaders
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
 val_loader   = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
@@ -435,110 +457,119 @@ test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, nu
 # # 4 Model Building and Training
 # 
 # ## 4.1 Loading Pretrained Model
+# The pretrained CLIP model and processor are loaded, and the model is configured for fine-tuning or training specific layers based on the defined settings. The optimizer, loss function, and other training parameters are also set up.
 
-# In[47]:
+# In[17]:
 
-# --- Progressive Unfreezing Settings ---
-progressive_unfreeze = True
-unfreeze_every = 5                 # alle X Epochen wird mehr freigegeben
+
+# ================= Load Pretrained CLIP Model ====================== #
+
+# ===== Progressive Unfreezing Settings
+unfreeze_every = 15                 # all x epoch more is unfreezed
 unfreeze_stages = ["text", "vision", "all"]
 current_stage = 0
 
-# load model
+# ===== model intilization
 model_name = "openai/clip-vit-base-patch32"
 model = CLIPModel.from_pretrained(model_name)
 processor = CLIPProcessor.from_pretrained(model_name)
-
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Temperature setzen
+# ===== Temperature
 temp = 0.12
-model.logit_scale.data = torch.tensor(math.log(1 / temp)).to(DEVICE)
-model.logit_scale.requires_grad = False
+model.logit_scale.data = torch.tensor(math.log(1 / temp)).to(DEVICE) # set initial temperature
+model.logit_scale.requires_grad = False  # optional: freeze temperature parameter during training (No)
 
 
+# ===== set finetuning or partial training
+if not finetuning:
+    # fine-tuning entire model
+    for param in model.parameters():
+        param.requires_grad = True
+else:
+    # freez model parameters
+    for param in model.parameters():
+        param.requires_grad = False
 
+    # onyl train projection layers
+    for param in model.visual_projection.parameters():
+        param.requires_grad = True
+    for param in model.text_projection.parameters():
+        param.requires_grad = True
 
-# ===============================
-# INITIAL FREEZING
-# ===============================
-
-# zuerst ALLES einfrieren
-for p in model.parameters():
-    p.requires_grad = False
-
-# Projection Heads trainierbar lassen
-for p in model.visual_projection.parameters():
-    p.requires_grad = True
-for p in model.text_projection.parameters():
-    p.requires_grad = True
-
-
-# optimizer, loss function and other parameters
+# ====== optimizer, loss function and other parameters
 loss_fn = nn.CrossEntropyLoss()
-epochs = 200
-lr = 1e-5
+epochs = 30
+lr = 5e-5
 batch_size = batch_size
 
+if finetuning:
+    optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=lr)
+else:
+    optimizer = optim.AdamW(model.text_model.parameters(), lr=lr)
 
-
-# optimizer nur mit trainierbaren Parametern
-optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=lr)
-
-
-
-# move model to device
+# ====== move model to device
 model.to(DEVICE)
 model.train()
 
-# prepare filename for saving
-run_name = run_name
+# ====== prepare filename for saving
+run_name = "test-run"
 filename = compile_filename(subset_size, DEVICE, batch_size, epochs, lr, run_name)
 print(f"Model will be saved as: {filename}")
 
 
 
+# 
 # ## 4.2 Training Loop
 
-# In[48]:
+# In[16]:
 
+
+# ================ Training Loop function ====================== #
 
 def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs, filename, current_stage, unfreeze_every, unfreeze_stages, patience=5):
 
+    # ======== Early Stopping and Logging Setup
     best_val_loss = float('inf')
     best_model_state = None
     patience_counter = 0
     logs = []
 
-    # ---------- METRIC FUNCTION ----------
+    # ======== FUNCTION TO COMPUTE METRICS
     def compute_metrics(model, processor, dataloader):
+
+        # initialize
         model.eval()
         all_image_embs = []
         all_text_embs = []
 
+        # compute embeddings
         with torch.no_grad():
             for images, texts in dataloader:
                 inputs = processor(text=texts, images=images, return_tensors="pt", padding=True).to(DEVICE)
 
-                img = model.get_image_features(pixel_values=inputs["pixel_values"])
-                txt = model.get_text_features(input_ids=inputs["input_ids"],
-                                              attention_mask=inputs["attention_mask"])
+                img = model.get_image_features(pixel_values=inputs["pixel_values"]) # get image features
+                txt = model.get_text_features(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"]) # get text features
 
-                img = img / img.norm(dim=-1, keepdim=True)
-                txt = txt / txt.norm(dim=-1, keepdim=True)
+                img = img / img.norm(dim=-1, keepdim=True) # normalize img
+                txt = txt / txt.norm(dim=-1, keepdim=True) # normalize txt
 
                 all_image_embs.append(img)
                 all_text_embs.append(txt)
 
+        # concatenate all embeddings
         all_image_embs = torch.cat(all_image_embs)
         all_text_embs = torch.cat(all_text_embs)
 
+        # compute mean similarity
         sims = (all_image_embs * all_text_embs).sum(dim=-1)
         mean_sim = sims.mean().item()
 
+        # compute Recall@K
         recall_at_k = {}
         sim_matrix = all_image_embs @ all_text_embs.T
 
+        # Recall@K calculation for k = 1, 5, 10 to evaluate retrieval performance and plot results
         for k in [1, 5, 10]:
             topk = sim_matrix.topk(k, dim=1).indices
             correct = sum(i in topk[i] for i in range(len(all_image_embs)))
@@ -546,16 +577,13 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
 
         return mean_sim, recall_at_k
 
-    # ------------------ TRAINING LOOP -------------------
+    # =============== TRAINING LOOP
     for epoch in range(num_epochs):
-        start = time.time()
 
-        # ===============================
-        # PROGRESSIVE UNFREEZING
-        # ===============================
-        if progressive_unfreeze and epoch > 0:
+        warmup_epochs = 30
+        if progressive_unfreeze and epoch >= warmup_epochs:
 
-            if epoch % unfreeze_every == 0 and current_stage < len(unfreeze_stages):
+            if (epoch - warmup_epochs) % unfreeze_every == 0 and current_stage < len(unfreeze_stages):
 
                 stage = unfreeze_stages[current_stage]
                 print(f"\n>>> Unfreezing stage: {stage}")
@@ -571,61 +599,94 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
                 elif stage == "all":
                     for p in model.parameters():
                         p.requires_grad = True
-                    model.logit_scale.requires_grad = False  # optional: Temperatur gefroren lassen
+                    model.logit_scale.requires_grad = False
 
                 current_stage += 1
 
-                # Optimizer aktualisieren, damit neue Parameter gelernt werden
                 optimizer = optim.AdamW(
-                    filter(lambda p: p.requires_grad, model.parameters()),
-                    lr=lr
-                )
+                    filter(lambda p: p.requires_grad, model.parameters()), lr=lr)
 
 
-        # ----- TRAIN -----
+        # ======== PROGRESSIVE UNFREEZING
+        if progressive_unfreeze and epoch > 0:
+
+            # unfreeze next stage
+            if epoch % unfreeze_every == 0 and current_stage < len(unfreeze_stages):
+
+                # unfreeze stage
+                stage = unfreeze_stages[current_stage]
+                print(f"\n>>> Unfreezing stage: {stage}")
+
+                # text unfreezing
+                if stage == "text":
+                    for p in model.text_model.parameters():
+                        p.requires_grad = True
+
+                # vision unfreezing
+                elif stage == "vision":
+                    for p in model.vision_model.parameters():
+                        p.requires_grad = True
+
+                # all unfreezing
+                elif stage == "all":
+                    for p in model.parameters():
+                        p.requires_grad = True
+                    model.logit_scale.requires_grad = False  # optional: freez temperature
+
+                current_stage += 1
+
+                # refresh optimizer, so that new parameters get learned
+                optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=lr)
+
+        # ====== Epoch time measurement
+        start = time.time()
+
+        # ====== TRAIN
         model.train()
         train_loss = 0
 
-        for images, texts in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}", leave=False):
-            inputs = processor(images=images, text=texts, padding=True, return_tensors="pt").to(DEVICE)
-            outputs = model(**inputs)
+        for images, texts in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}", leave=False): # loop over batches of training data
+            inputs = processor(images=images, text=texts, padding=True, return_tensors="pt").to(DEVICE) # prepare inputs
+            outputs = model(**inputs) # forward pass
 
-            logits_i = outputs.logits_per_image
-            logits_t = outputs.logits_per_text
+            logits_i = outputs.logits_per_image # image-to-text logits
+            logits_t = outputs.logits_per_text # text-to-image logits
 
-            gt = torch.arange(len(images), device=DEVICE)
-            loss = (criterion(logits_i, gt) + criterion(logits_t, gt)) / 2
+            gt = torch.arange(len(images), device=DEVICE) # ground truth labels
+            loss = (criterion(logits_i, gt) + criterion(logits_t, gt)) / 2 # compute loss
 
             optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+            loss.backward() # backward pass
+            optimizer.step() # optimizer step
 
             train_loss += loss.item()
 
         train_loss /= len(train_loader)
 
-        # ----- VALIDATION -----
+        # ======= VALIDATION
         model.eval()
         val_loss = 0
 
+        # no grad for validation
         with torch.no_grad():
-            for images, texts in val_loader:
-                inputs = processor(images=images, text=texts, padding=True, return_tensors="pt").to(DEVICE)
-                outputs = model(**inputs)
+            for images, texts in val_loader: # loop over batches of validation data
+                inputs = processor(images=images, text=texts, padding=True, return_tensors="pt").to(DEVICE) # prepare inputs
+                outputs = model(**inputs) # forward pass
 
-                logits_i = outputs.logits_per_image
-                logits_t = outputs.logits_per_text
+                logits_i = outputs.logits_per_image # image-to-text logits
+                logits_t = outputs.logits_per_text # text-to-image logits
 
-                gt = torch.arange(len(images), device=DEVICE)
-                loss = (criterion(logits_i, gt) + criterion(logits_t, gt)) / 2
+                gt = torch.arange(len(images), device=DEVICE) # ground truth labels
+                loss = (criterion(logits_i, gt) + criterion(logits_t, gt)) / 2 # compute loss
 
-                val_loss += loss.item()
+                val_loss += loss.item() # accumulate validation loss
 
-        val_loss /= len(val_loader)
+        val_loss /= len(val_loader) # average validation loss over batches
 
-        # -------- METRICS AFTER EACH EPOCH --------
-        mean_sim, rec = compute_metrics(model, processor, val_loader)
+        # ======== METRICS AFTER EACH EPOCH
+        mean_sim, rec = compute_metrics(model, processor, val_loader) # compute metrics
 
+        # ==== LOGGING
         logs.append({
             "epoch": epoch + 1,
             "train_loss": train_loss,
@@ -638,6 +699,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
             "time_sec": time.time() - start
         })
 
+        # ==== PRINT EPOCH STATS
         print(
             f"Epoch {epoch+1}/{num_epochs} | "
             f"Train Loss: {train_loss:.4f} | "
@@ -647,26 +709,26 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
             f"Epoch time: {time.time() - start:.2f}s"
         )
 
-        # -------- EARLY STOPPING --------
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            best_model_state = model.state_dict()
-            patience_counter = 0
+        # ====== EARLY STOPPING
+        if val_loss < best_val_loss: # check for improvement of validation loss
+            best_val_loss = val_loss # update best validation loss
+            best_model_state = model.state_dict() # save best model state
+            patience_counter = 0 # reset patience counter
         else:
-            patience_counter += 1
-            if patience_counter >= patience:
+            patience_counter += 1 # increment patience counter
+            if patience_counter >= patience: # check if patience exceeded
                 print("Early stopping triggered.")
                 break
 
     # restore best model
     model.load_state_dict(best_model_state)
 
-    # save model
+    # ======== save model
     if save_model:
-        save_path = RUNS_DIR / filename
-        save_path.mkdir(parents=True, exist_ok=True)
-        model_file = save_path / f"{filename}_model.pth"
-        torch.save(model.state_dict(), model_file)
+        save_path = RUNS_DIR / filename # define save path
+        save_path.mkdir(parents=True, exist_ok=True) # create directory if not exists
+        model_file = save_path / f"{filename}_model.pth" # define model file path
+        torch.save(model.state_dict(), model_file) # save model state
         print(f"Model saved to {model_file}")
 
     return pd.DataFrame(logs)
@@ -675,9 +737,10 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
 # In[49]:
 
 
-# train model
+# ==================== Model Training ====================== #
+#train model
 if not hyperparameter_tuning:
-    logs = train_model(model, train_loader, val_loader, loss_fn, optimizer, epochs, filename, current_stage, unfreeze_every, unfreeze_stages, patience=50)
+   logs = train_model(model, train_loader, val_loader, loss_fn, optimizer, epochs, filename, current_stage, unfreeze_every, unfreeze_stages, patience=50)
 
 
 # ## 4.3 Saving the Model and export Data
@@ -685,6 +748,7 @@ if not hyperparameter_tuning:
 # In[34]:
 
 
+# ==================== Save Logs and Plots ====================== #
 # save logs to csv
 if not hyperparameter_tuning:
     if save_model:
@@ -864,137 +928,6 @@ if hyperparameter_tuning:
     print("====================")
     print(best_hyperparams)
     print(f"Best Recall@1: {best_performance:.4f}")
-
-
-# In[34]:
-
-
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
-if test_model:
-    # load best model
-    model_path = RUNS_DIR / "20251122_HT_lr1e-05_bs16_ep30/20251122_HT_lr1e-05_bs16_ep30_model.pth"
-    model.load_state_dict(torch.load(model_path))
-    model.to(DEVICE)
-    model.eval()
-
-    all_image_embs = []
-    all_text_embs = []
-    all_images = []
-    all_texts = []
-
-    # compute embeddings for the entire test set
-    with torch.no_grad():
-        for batch_images, batch_texts in test_loader:
-            inputs = processor(images=batch_images, text=batch_texts, padding=True, return_tensors="pt").to(DEVICE)
-
-            image_embs = model.get_image_features(pixel_values=inputs["pixel_values"])
-            text_embs = model.get_text_features(
-                input_ids=inputs["input_ids"],
-                attention_mask=inputs["attention_mask"]
-            )
-
-            # normalize
-            image_embs = image_embs / image_embs.norm(dim=-1, keepdim=True)
-            text_embs = text_embs / text_embs.norm(dim=-1, keepdim=True)
-
-            all_image_embs.append(image_embs)
-            all_text_embs.append(text_embs)
-            all_images.extend(batch_images)
-            all_texts.extend(batch_texts)
-
-    # concatenate all batches
-    all_image_embs = torch.cat(all_image_embs, dim=0)
-    all_text_embs = torch.cat(all_text_embs, dim=0)
-
-    # compute similarity matrix
-    sims = all_image_embs @ all_text_embs.T  # [num_images, num_texts]
-
-    # visualize top-3 retrievals for first 5 queries
-    num_queries = min(5, len(all_texts))
-
-    for i in range(num_queries):
-        # Text -> Image
-        print(f"\nQuery Text: {all_texts[i]}")
-        topk = sims[i].topk(3).indices
-        for rank, idx in enumerate(topk):
-            img = all_images[idx]
-            img_to_show = img.permute(1, 2, 0).detach().cpu().numpy().clip(0,1)
-            plt.imshow(img_to_show)
-            plt.title(f"Rank {rank+1}")
-            plt.axis('off')
-            plt.show()
-
-        # Image -> Text
-        print(f"\nQuery Image:")
-        img = all_images[i]
-        img_to_show = img.permute(1, 2, 0).detach().cpu().numpy().clip(0,1)
-        plt.imshow(img_to_show)
-        plt.title("Query Image")
-        plt.axis('off')
-        plt.show()
-
-        topk = sims[:, i].topk(3).indices
-        for rank, idx in enumerate(topk):
-            print(f"Rank {rank+1} Caption: {all_texts[idx]}")
-
-
-# In[32]:
-
-
-# Test retrieval with some examples
-
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
-if test_model:
-    # load best model
-    model_path = RUNS_DIR / "20251122_HT_lr1e-05_bs16_ep30/20251122_HT_lr1e-05_bs16_ep30_model.pth"
-    model.load_state_dict(torch.load(model_path))
-    model.to(DEVICE)
-    model.eval()  # <--- Klammern hinzufügen, sonst wird eval nicht ausgeführt
-
-    # test some retrievals
-    test_images, test_texts = next(iter(test_loader))
-    inputs = processor(images=test_images, text=test_texts, padding=True, return_tensors="pt").to(DEVICE)
-
-    with torch.no_grad():
-        image_embs = model.get_image_features(pixel_values=inputs["pixel_values"])
-        text_embs = model.get_text_features(
-            input_ids=inputs["input_ids"],
-            attention_mask=inputs["attention_mask"]
-        )
-
-    # normalize embeddings
-    image_embs = image_embs / image_embs.norm(dim=-1, keepdim=True)
-    text_embs = text_embs / text_embs.norm(dim=-1, keepdim=True)
-
-    sims = image_embs @ text_embs.T
-
-    # show top 3 retrievals for first 3 test samples
-    for i in range(3):
-        print(f"\nQuery Text: {test_texts[i]}")
-        topk = sims[i].topk(3).indices
-        for rank, idx in enumerate(topk):
-            img = test_images[idx]
-            # Channels-first -> Channels-last und Tensor -> NumPy
-            img_to_show = img.permute(1, 2, 0).detach().cpu().numpy().clip(0, 1)
-            plt.imshow(img_to_show)
-            plt.title(f"Rank {rank+1}")
-            plt.axis('off')
-            plt.show()
-
-        print(f"\nQuery Image:")
-        img = test_images[i]
-        img_to_show = img.permute(1, 2, 0).detach().cpu().numpy().clip(0, 1)
-        plt.imshow(img_to_show)
-        plt.title("Query Image")
-        plt.axis('off')
-        plt.show()
-
-        topk = sims[:, i].topk(3).indices
-        for rank, idx in enumerate(topk):
-            print(f"Rank {rank+1} Caption: {test_texts[idx]}")
-
 
 
 # # 5 Evaluation
