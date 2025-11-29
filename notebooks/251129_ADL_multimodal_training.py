@@ -193,6 +193,9 @@ train_full_model = False
 progressive_unfreeze = True
 
 
+# ========= Run name for saving
+run_name = "flickr30k_prog_unfreeze"
+
 # ## 1.3 Data Loading
 # 
 # Here the data is loaded from the Flickr8k dataset for further analysis and model training.
@@ -515,7 +518,7 @@ model.to(DEVICE)
 model.train()
 
 # ====== prepare filename for saving
-run_name = "test-run"
+run_name = run_name
 filename = compile_filename(subset_size, DEVICE, batch_size, epochs, lr, run_name)
 print(f"Model will be saved as: {filename}")
 
