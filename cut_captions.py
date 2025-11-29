@@ -7,7 +7,7 @@ df = pd.read_csv(csv_file, sep=";")  # falls andere Trennzeichen, anpassen
 
 # CLIP Tokenizer laden
 tokenizer = CLIPTokenizer.from_pretrained("openai/clip-vit-base-patch32")
-max_len = 77
+max_len = 70
 
 # Funktion zum Kürzen
 def truncate_caption(text):
@@ -21,4 +21,4 @@ df["caption"] = df["caption"].apply(truncate_caption)
 
 # Neue CSV speichern
 df.to_csv("flickr30k_captions_truncated.csv", sep=";", index=False)
-print("Truncated CSV gespeichert als flickr39k_captions_truncated.csv")
+print("Truncated CSV gespeichert als flickr30k_captions_truncated.csv")
