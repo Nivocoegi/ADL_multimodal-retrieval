@@ -478,6 +478,8 @@ current_stage = 0
 model_name = "openai/clip-vit-base-patch32"
 model = CLIPModel.from_pretrained(model_name)
 processor = CLIPProcessor.from_pretrained(model_name)
+processor.tokenizer.model_max_length = 77 # set max token length
+processor.tokenizer.truncation_side = "right" # set truncation side
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # ===== Temperature
@@ -551,7 +553,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         # compute embeddings
         with torch.no_grad():
             for images, texts in dataloader:
-                inputs = processor(text=texts, images=images, return_tensors="pt", padding=True).to(DEVICE)
+                inputs = processor(text=texts, images=images, padding=True, trunction=True, return_tensors="pt", padding=True).to(DEVICE)
 
                 img = model.get_image_features(pixel_values=inputs["pixel_values"]) # get image features
                 txt = model.get_text_features(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"]) # get text features
@@ -651,7 +653,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         train_loss = 0
 
         for images, texts in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}", leave=False): # loop over batches of training data
-            inputs = processor(images=images, text=texts, padding=True, return_tensors="pt").to(DEVICE) # prepare inputs
+            inputs = processor(images=images, text=texts, padding=True, trunction=True, return_tensors="pt").to(DEVICE) # prepare inputs
             outputs = model(**inputs) # forward pass
 
             logits_i = outputs.logits_per_image # image-to-text logits
@@ -675,7 +677,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         # no grad for validation
         with torch.no_grad():
             for images, texts in val_loader: # loop over batches of validation data
-                inputs = processor(images=images, text=texts, padding=True, return_tensors="pt").to(DEVICE) # prepare inputs
+                inputs = processor(images=images, text=texts, padding=True, trunction=True, return_tensors="pt").to(DEVICE) # prepare inputs
                 outputs = model(**inputs) # forward pass
 
                 logits_i = outputs.logits_per_image # image-to-text logits
