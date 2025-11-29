@@ -58,22 +58,22 @@ import pandas as pd
 from transformers import CLIPTokenizer
 
 # CSV-Datei laden
-csv_file = "flickr30k_captions_truncated.csv"
+csv_file = "flickr30k_captions.csv"
 df = pd.read_csv(csv_file, sep=";")  # anpassen, falls anderes Trennzeichen
 
 # CLIP Tokenizer laden
 tokenizer = CLIPTokenizer.from_pretrained("openai/clip-vit-base-patch32")
-# max_tokens = 77  # max_position_embeddings für CLIP
+max_tokens = 70  # max_position_embeddings für CLIP
 
-# def truncate_caption_tokens(text):
-#     tokens = tokenizer.encode(text, add_special_tokens=False)
-#     if len(tokens) > max_tokens:
-#         tokens = tokens[:max_tokens]
-#     return tokenizer.decode(tokens)
+def truncate_caption_tokens(text):
+    tokens = tokenizer.encode(text, add_special_tokens=False)
+    if len(tokens) > max_tokens:
+        tokens = tokens[:max_tokens]
+    return tokenizer.decode(tokens)
 
-# # Captions kürzen
-# df["caption"] = df["caption"].apply(truncate_caption_tokens)
+# Captions kürzen
+df["caption"] = df["caption"].apply(truncate_caption_tokens)
 
 # Neue CSV speichern
-# df.to_csv("flickr30k_captions_truncated.csv", sep=";", index=False)
-# print("Truncated CSV gespeichert als flickr30k_captions_truncated.csv")
+df.to_csv("flickr30k_captions_truncated.csv", sep=";", index=False)
+print("Truncated CSV gespeichert als flickr30k_captions_truncated.csv")
