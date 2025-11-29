@@ -148,8 +148,10 @@ except NameError:
 
 # ============= set data paths
 DATA_DIR = PROJECT_ROOT / "data_2"
+DATA_DIR = PROJECT_ROOT / "data"
 IMG_DIR = DATA_DIR / "Images"
 CAPTIONS_FILE = DATA_DIR / "flickr30k_captions.csv"
+CAPTIONS_FILE = DATA_DIR / "flickr8k_captions.csv"
 RUNS_DIR = PROJECT_ROOT / "runs"
 
 
