@@ -588,6 +588,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
     for epoch in range(num_epochs):
 
         warmup_epochs = 30
+        stage = "projection"
         if progressive_unfreeze and epoch >= warmup_epochs:
 
             if (epoch - warmup_epochs) % unfreeze_every == 0 and current_stage < len(unfreeze_stages):
