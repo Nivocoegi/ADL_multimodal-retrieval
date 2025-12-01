@@ -164,24 +164,24 @@ RUNS_DIR = PROJECT_ROOT / "runs"
 finetuning = True
 
 # ========= model saving flag
-save_model = False
+save_model = True
 
 # ========= DataLoader and subset parameters
-use_subset = True
-subset_size = 100  # Number of samples in subset
+use_subset = False
+subset_size = "-full"  # Number of samples in subset
 batch_size = 64 # for DataLoader
 num_workers = 0  # for DataLoader # 0 for local; 4 for cluster
 
 # ========= Plotting parameters
 save_plot = True
-show_plot = False
+show_plot = True
 
 # ======== Hyperparameter tuning
 hyperparameter_tuning = False
 
 
 # ======== Cluster settings
-cluster = False
+cluster = True
 if cluster:
     num_workers = 4
 
@@ -541,7 +541,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
     best_model_state = None
     patience_counter = 0
     logs = []
-
+    stage_unfrozen = None
 
     # ======== FUNCTION TO COMPUTE METRICS
     def compute_metrics(model, processor, dataloader):
@@ -591,29 +591,26 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         # ======== PROGRESSIVE UNFREEZING
         warmup_epochs = 0
         stage = "projection"
-        if progressive_unfreeze and epoch >= warmup_epochs:
+        if progressive_unfreeze and current_stage < len(unfreeze_stages):
+            stage = unfreeze_stages[current_stage]
 
-            if (epoch - warmup_epochs) % unfreeze_every == 0 and current_stage < len(unfreeze_stages): # if clause to unfreeze if warmup is over and current stage is not exceeded, otherwise skip
-
-                stage = unfreeze_stages[current_stage]
+            # Unfreeze nur, wenn Stage gerade neu gestartet wird
+            if 'stage_unfrozen' not in locals() or stage_unfrozen != stage:
                 print(f"\n>>> Unfreezing stage: {stage}")
 
                 if stage == "text":
                     for p in model.text_model.parameters():
                         p.requires_grad = True
-
                 elif stage == "vision":
                     for p in model.vision_model.parameters():
                         p.requires_grad = True
-
                 elif stage == "all":
                     for p in model.parameters():
                         p.requires_grad = True
                     model.logit_scale.requires_grad = False
 
-                current_stage += 1
-
                 optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=lr)
+                stage_unfrozen = stage  # merken, dass diese Stage bereits freigegeben wurde
 
         # ====== Epoch time measurement
         start = time.time()
@@ -621,47 +618,41 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         # ====== TRAIN
         model.train()
         train_loss = 0
+        for images, texts in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False):
+            inputs = processor(images=images, text=texts, padding=True, trunction=True, max_length=77,
+                               return_tensors="pt").to(DEVICE)
+            outputs = model(**inputs)
 
-        for images, texts in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}", leave=False): # loop over batches of training data
-            inputs = processor(images=images, text=texts, padding=True, trunction=True, max_length=77, return_tensors="pt").to(DEVICE) # prepare inputs
-            outputs = model(**inputs) # forward pass
-
-            logits_i = outputs.logits_per_image # image-to-text logits
-            logits_t = outputs.logits_per_text # text-to-image logits
-
-            gt = torch.arange(len(images), device=DEVICE) # ground truth labels
-            loss = (criterion(logits_i, gt) + criterion(logits_t, gt)) / 2 # compute loss
+            logits_i = outputs.logits_per_image
+            logits_t = outputs.logits_per_text
+            gt = torch.arange(len(images), device=DEVICE)
+            loss = (criterion(logits_i, gt) + criterion(logits_t, gt)) / 2
 
             optimizer.zero_grad()
-            loss.backward() # backward pass
-            optimizer.step() # optimizer step
-
+            loss.backward()
+            optimizer.step()
             train_loss += loss.item()
-
         train_loss /= len(train_loader)
 
         # ======= VALIDATION
         model.eval()
         val_loss = 0
-
-        # no grad for validation
         with torch.no_grad():
-            for images, texts in val_loader: # loop over batches of validation data
-                inputs = processor(images=images, text=texts, padding=True, trunction=True, max_length=77,  return_tensors="pt").to(DEVICE) # prepare inputs
-                outputs = model(**inputs) # forward pass
+            for images, texts in val_loader:
+                inputs = processor(images=images, text=texts, padding=True, trunction=True, max_length=77,
+                                   return_tensors="pt").to(DEVICE)
+                outputs = model(**inputs)
 
-                logits_i = outputs.logits_per_image # image-to-text logits
-                logits_t = outputs.logits_per_text # text-to-image logits
+                logits_i = outputs.logits_per_image
+                logits_t = outputs.logits_per_text
+                gt = torch.arange(len(images), device=DEVICE)
+                loss = (criterion(logits_i, gt) + criterion(logits_t, gt)) / 2
 
-                gt = torch.arange(len(images), device=DEVICE) # ground truth labels
-                loss = (criterion(logits_i, gt) + criterion(logits_t, gt)) / 2 # compute loss
+                val_loss += loss.item()
+        val_loss /= len(val_loader)
 
-                val_loss += loss.item() # accumulate validation loss
-
-        val_loss /= len(val_loader) # average validation loss over batches
-
-        # ======== METRICS AFTER EACH EPOCH
-        mean_sim, rec = compute_metrics(model, processor, val_loader) # compute metrics
+        # ======== METRICS
+        mean_sim, rec = compute_metrics(model, processor, val_loader)
 
         # ==== LOGGING
         logs.append({
@@ -676,9 +667,9 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
             "time_sec": time.time() - start
         })
 
-        # ==== PRINT EPOCH STATS
+        # ==== PRINT
         print(
-            f"Epoch {epoch+1}/{num_epochs} | "
+            f"Epoch {epoch + 1}/{num_epochs} | "
             f"Train Loss: {train_loss:.4f} | "
             f"Val Loss: {val_loss:.4f} | "
             f"MeanSim: {mean_sim:.4f} | "
@@ -686,26 +677,23 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
             f"Epoch time: {time.time() - start:.2f}s"
         )
 
-        # ====== EARLY STOPPING
-        if val_loss < best_val_loss - 0.01: # check for improvement of validation loss with a small threshold
-            best_val_loss = val_loss # update best validation loss
-            best_model_state = model.state_dict() # save best model state
-            patience_counter = 0 # reset patience counter
-
+        # ====== EARLY STOPPING PRO STAGE
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            best_model_state = model.state_dict()
+            patience_counter = 0
         else:
-            # early stopping of stage unfreezing if no improvement of current stage
-            print(stage, unfreeze_stages[current_stage - 1])
             patience_counter += 1
-            print(patience_counter, patience)
-            if patience_counter >= patience and stage == unfreeze_stages[current_stage - 1]:
-                print(f"No improvement for {patience} epochs. Moving to next unfreezing stage.")
-                current_stage += 1
-                patience_counter = 0 # reset patience counter
-            # early stopping of entire training if no improvement
+            if progressive_unfreeze and current_stage < len(unfreeze_stages):
+                if patience_counter >= patience:
+                    print(f"No improvement in stage '{stage}' for {patience} epochs. Moving to next stage.")
+                    current_stage += 1
+                    patience_counter = 0
+                    if current_stage < len(unfreeze_stages):
+                        stage_unfrozen = None  # nächste Stage noch nicht freigegeben
             else:
-                patience_counter += 1 # increment patience counter
-                if patience_counter >= patience: # check if patience exceeded
-                    print("Early stopping triggered.")
+                if patience_counter >= patience:
+                    print("Early stopping triggered for entire training.")
                     break
 
     # restore best model
