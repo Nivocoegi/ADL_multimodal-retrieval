@@ -716,7 +716,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
 # ==================== Model Training ====================== #
 #train model
 if not hyperparameter_tuning:
-   logs = train_model(model, train_loader, val_loader, loss_fn, optimizer, epochs, filename, current_stage, unfreeze_every, unfreeze_stages, patience=1)
+   logs = train_model(model, train_loader, val_loader, loss_fn, optimizer, epochs, filename, current_stage, unfreeze_every, unfreeze_stages, patience=5)
 
 
 # ## 4.3 Saving the Model and export Data
