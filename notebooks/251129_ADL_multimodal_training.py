@@ -147,11 +147,11 @@ except NameError:
     PROJECT_ROOT = find_project_root()
 
 # ============= set data paths
-DATA_DIR = PROJECT_ROOT / "data_2"
-# DATA_DIR = PROJECT_ROOT / "data"
+# DATA_DIR = PROJECT_ROOT / "data_2"
+DATA_DIR = PROJECT_ROOT / "data"
 IMG_DIR = DATA_DIR / "Images"
-CAPTIONS_FILE = DATA_DIR / "flickr30k_captions_truncated.csv"
-# CAPTIONS_FILE = DATA_DIR / "flickr8k_captions.csv"
+# CAPTIONS_FILE = DATA_DIR / "flickr30k_captions_truncated.csv"
+CAPTIONS_FILE = DATA_DIR / "flickr8k_captions.csv"
 RUNS_DIR = PROJECT_ROOT / "runs"
 
 
@@ -194,7 +194,7 @@ progressive_unfreeze = True
 
 
 # ========= Run name for saving
-run_name = "flickr30k_prog_unfreeze"
+run_name = "prog_unfreeze_V2"
 
 # ## 1.3 Data Loading
 # 
@@ -506,8 +506,8 @@ else:
 
 # ====== optimizer, loss function and other parameters
 loss_fn = nn.CrossEntropyLoss()
-epochs = 30
-lr = 5e-5
+epochs = 200
+lr = 1e-5
 batch_size = batch_size
 
 if finetuning:
