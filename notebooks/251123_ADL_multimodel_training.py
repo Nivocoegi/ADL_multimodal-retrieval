@@ -141,7 +141,7 @@ except NameError:
     # fallback for Jupyter notebooks
     PROJECT_ROOT = find_project_root()
 
-# ============= PROJECT_ROOT = Path(__file__).resolve().parents[1]
+# ============= PROJECT_ROOT
 DATA_DIR = PROJECT_ROOT / "data"
 IMG_DIR = DATA_DIR / "Images"
 CAPTIONS_FILE = DATA_DIR / "flickr8k_captions.csv"
@@ -154,14 +154,14 @@ RUNS_DIR = PROJECT_ROOT / "runs"
 # ==================== Flags ======================= #
 
 # ========= Finetuning flag
-finetuning = False
+finetuning = True
 
 # ========= model saving flag
 save_model = True
 
 # ========= DataLoader and subset parameters
-use_subset = True
-subset_size = 10  # Number of samples in subset
+use_subset = False
+subset_size = "-full"  # Number of samples in subset
 batch_size = 32 # for DataLoader
 num_workers = 0  # for DataLoader # 0 for local; 4 for cluster
 
@@ -171,7 +171,7 @@ save_plot = True
 show_plot = True
 
 # ======== Hyperparameter tuning
-hyperparameter_tuning = True
+hyperparameter_tuning = False
 
 
 # ======== Cluster settings
@@ -461,8 +461,8 @@ else:
 
 # optimizer, loss function and other parameters
 loss_fn = nn.CrossEntropyLoss()
-epochs = 2
-lr = 5e-5
+epochs = 200
+lr = 1e-5
 batch_size = batch_size
 
 if finetuning:
@@ -477,7 +477,7 @@ model.to(DEVICE)
 model.train()
 
 # prepare filename for saving
-run_name = "test-run"
+run_name = "overfitt"
 filename = compile_filename(subset_size, DEVICE, batch_size, epochs, lr, run_name)
 print(f"Model will be saved as: {filename}")
 
@@ -522,13 +522,36 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         sims = (all_image_embs * all_text_embs).sum(dim=-1)
         mean_sim = sims.mean().item()
 
+        # recall_at_k = {}
+        # sim_matrix = all_image_embs @ all_text_embs.T
+        #
+        # for k in [1, 5, 10]:
+        #     topk = sim_matrix.topk(k, dim=1).indices
+        #     correct = sum(i in topk[i] for i in range(len(all_image_embs)))
+        #     recall_at_k[f"recall@{k}"] = correct / len(all_image_embs)
+
         recall_at_k = {}
         sim_matrix = all_image_embs @ all_text_embs.T
 
+        num_images = len(all_image_embs)
+        captions_per_image = 5
+
         for k in [1, 5, 10]:
             topk = sim_matrix.topk(k, dim=1).indices
-            correct = sum(i in topk[i] for i in range(len(all_image_embs)))
-            recall_at_k[f"recall@{k}"] = correct / len(all_image_embs)
+
+            total_recall = 0.0
+
+            for i in range(num_images):
+                # all captions for image i
+                relevant = set(range(i * captions_per_image, (i + 1) * captions_per_image))
+
+                # count hits in top k
+                hits = len(relevant.intersection(topk[i].tolist()))
+
+                # recall for this image
+                total_recall += hits / captions_per_image
+
+            recall_at_k[f"recall@{k}"] = total_recall / num_images
 
         return mean_sim, recall_at_k
 
@@ -630,7 +653,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
 
 # train model
 if not hyperparameter_tuning:
-    logs = train_model(model, train_loader, val_loader, loss_fn, optimizer, epochs, filename, patience=5)
+    logs = train_model(model, train_loader, val_loader, loss_fn, optimizer, epochs, filename, patience=50)
 
 
 # ## 4.3 Saving the Model and export Data

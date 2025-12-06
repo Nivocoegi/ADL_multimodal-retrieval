@@ -17,4 +17,4 @@ nvidia-smi
 
 # ---- Training starten ----
 /cfs/earth/scratch/vognic01/.conda/envs/ADL_multimodal-retrieval/bin/python \
-/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/251201_ADL_multimodal_training.py
+/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/251123_ADL_multimodal_training.py
