@@ -522,36 +522,13 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         sims = (all_image_embs * all_text_embs).sum(dim=-1)
         mean_sim = sims.mean().item()
 
-        # recall_at_k = {}
-        # sim_matrix = all_image_embs @ all_text_embs.T
-        #
-        # for k in [1, 5, 10]:
-        #     topk = sim_matrix.topk(k, dim=1).indices
-        #     correct = sum(i in topk[i] for i in range(len(all_image_embs)))
-        #     recall_at_k[f"recall@{k}"] = correct / len(all_image_embs)
-
         recall_at_k = {}
         sim_matrix = all_image_embs @ all_text_embs.T
 
-        num_images = len(all_image_embs)
-        captions_per_image = 5
-
         for k in [1, 5, 10]:
             topk = sim_matrix.topk(k, dim=1).indices
-
-            total_recall = 0.0
-
-            for i in range(num_images):
-                # all captions for image i
-                relevant = set(range(i * captions_per_image, (i + 1) * captions_per_image))
-
-                # count hits in top k
-                hits = len(relevant.intersection(topk[i].tolist()))
-
-                # recall for this image
-                total_recall += hits / captions_per_image
-
-            recall_at_k[f"recall@{k}"] = total_recall / num_images
+            correct = sum(i in topk[i] for i in range(len(all_image_embs)))
+            recall_at_k[f"recall@{k}"] = correct / len(all_image_embs)
 
         return mean_sim, recall_at_k
 

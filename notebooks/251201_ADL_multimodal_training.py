@@ -164,11 +164,11 @@ RUNS_DIR = PROJECT_ROOT / "runs"
 finetuning = True
 
 # ========= model saving flag
-save_model = True
+save_model = False
 
 # ========= DataLoader and subset parameters
-use_subset = False
-subset_size = "-full"  # Number of samples in subset
+use_subset = True
+subset_size = 100  # Number of samples in subset
 batch_size = 64 # for DataLoader
 num_workers = 0  # for DataLoader # 0 for local; 4 for cluster
 
@@ -181,7 +181,7 @@ hyperparameter_tuning = False
 
 
 # ======== Cluster settings
-cluster = True
+cluster = False
 if cluster:
     num_workers = 4
 
@@ -194,7 +194,7 @@ progressive_unfreeze = True
 
 
 # ========= Run name for saving
-run_name = "prog_unfreeze_V2"
+run_name = "LR-schedule"
 
 # ## 1.3 Data Loading
 # 
@@ -470,8 +470,8 @@ test_loader  = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, nu
 # ================= Load Pretrained CLIP Model ====================== #
 
 # ===== Progressive Unfreezing Settings
-unfreeze_every = 30                 # all x epoch more is unfreezed
-unfreeze_stages = ["projection", "text", "vision"]
+unfreeze_every = 30                 # all x epoch more is unfreezed if validation loss still improving
+unfreeze_stages = ["projection", "text", "vision", "all"]
 current_stage = 0
 
 # ===== model intilization
@@ -534,7 +534,7 @@ print(f"Model will be saved as: {filename}")
 
 # ================ Training Loop function ====================== #
 
-def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs, filename, current_stage, unfreeze_every, unfreeze_stages, patience=5):
+def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs, filename, current_stage, unfreeze_every, unfreeze_stages, patience=1):
 
     # ======== Early Stopping and Logging Setup
     best_val_loss = float('inf')
@@ -574,39 +574,14 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         mean_sim = sims.mean().item()
 
         # compute Recall@K
-
-        # recall_at_k = {}
-        # sim_matrix = all_image_embs @ all_text_embs.T # calculates similarity matrix, input image, output text
-        #
-        # # Recall@K calculation for k = 1, 5, 10 to evaluate retrieval performance and plot results
-        # for k in [1, 5, 10]:
-        #     topk = sim_matrix.topk(k, dim=1).indices
-        #     correct = sum(i in topk[i] for i in range(len(all_image_embs)))
-        #     recall_at_k[f"recall@{k}"] = correct / len(all_image_embs)
-
         recall_at_k = {}
-        sim_matrix = all_image_embs @ all_text_embs.T
+        sim_matrix = all_image_embs @ all_text_embs.T # calculates similarity matrix, input image, output text
 
-        num_images = len(all_image_embs)
-        captions_per_image = 5
-
+        # Recall@K calculation for k = 1, 5, 10 to evaluate retrieval performance and plot results
         for k in [1, 5, 10]:
             topk = sim_matrix.topk(k, dim=1).indices
-
-            total_recall = 0.0
-
-            for i in range(num_images):
-                # all captions for image i
-                relevant = set(range(i * captions_per_image, (i + 1) * captions_per_image))
-
-                # count hits in top k
-                hits = len(relevant.intersection(topk[i].tolist()))
-
-                # recall for this image
-                total_recall += hits / captions_per_image
-
-            recall_at_k[f"recall@{k}"] = total_recall / num_images
-
+            correct = sum(i in topk[i] for i in range(len(all_image_embs)))
+            recall_at_k[f"recall@{k}"] = correct / len(all_image_embs)
 
         return mean_sim, recall_at_k
 
@@ -615,27 +590,72 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
 
         # ======== PROGRESSIVE UNFREEZING
         warmup_epochs = 0
+        lr = 1e-5
         stage = "projection"
         if progressive_unfreeze and current_stage < len(unfreeze_stages):
             stage = unfreeze_stages[current_stage]
 
-            # Unfreeze nur, wenn Stage gerade neu gestartet wird
+            # Unfreeze stages at specified intervals
             if 'stage_unfrozen' not in locals() or stage_unfrozen != stage:
                 print(f"\n>>> Unfreezing stage: {stage}")
 
                 if stage == "text":
                     for p in model.text_model.parameters():
                         p.requires_grad = True
+                    lr = 5e-6
+                    print("New learning rate:", lr)
                 elif stage == "vision":
                     for p in model.vision_model.parameters():
                         p.requires_grad = True
+                    lr = 1e-6
+                    print("New learning rate:", lr)
                 elif stage == "all":
                     for p in model.parameters():
                         p.requires_grad = True
                     model.logit_scale.requires_grad = False
+                    lr = 5e-7
+                    print("New learning rate:", lr)
 
                 optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=lr)
-                stage_unfrozen = stage  # merken, dass diese Stage bereits freigegeben wurde
+                stage_unfrozen = stage  # mark stage as unfrozen
+
+        # ======== PROGRESSIVE UNFREEZING
+        # warmup_epochs = 0
+        # stage = "projection"
+        # if progressive_unfreeze and current_stage < len(unfreeze_stages):
+        #     stage = unfreeze_stages[current_stage]
+        #
+        #     if 'stage_unfrozen' not in locals() or stage_unfrozen != stage:
+        #         print(f"\n>>> Unfreezing stage: {stage}")
+        #
+        #         # ===== Projection unfreeze =====
+        #         if stage == "projection":
+        #             print("Unfreezing projection layers.")
+        #             model.visual_projection.requires_grad = True
+        #             model.text_projection.requires_grad = True
+        #             model.logit_scale.requires_grad = True
+        #             lr = 1e-5
+        #
+        #         elif stage == "text":
+        #             print("Unfreezing text encoder.")
+        #             for p in model.text_model.parameters():
+        #                 p.requires_grad = True
+        #             lr = 5e-6
+        #
+        #         elif stage == "vision":
+        #             print("Unfreezing vision encoder.")
+        #             for p in model.vision_model.parameters():
+        #                 p.requires_grad = True
+        #             lr = 1e-6
+        #
+        #         # build new optimizer
+        #         optimizer = optim.AdamW(
+        #             filter(lambda p: p.requires_grad, model.parameters()),
+        #             lr=lr
+        #         )
+        #
+        #         stage_unfrozen = stage
+        #         current_stage += 1
 
         # ====== Epoch time measurement
         start = time.time()
@@ -703,7 +723,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         )
 
         # ====== EARLY STOPPING PRO STAGE
-        if val_loss < best_val_loss:
+        if val_loss < best_val_loss - 0.01:
             best_val_loss = val_loss
             best_model_state = model.state_dict()
             patience_counter = 0
@@ -715,7 +735,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
                     current_stage += 1
                     patience_counter = 0
                     if current_stage < len(unfreeze_stages):
-                        stage_unfrozen = None  # nächste Stage noch nicht freigegeben
+                        stage_unfrozen = None  # reset to trigger unfreezing in next epoch
             else:
                 if patience_counter >= patience:
                     print("Early stopping triggered for entire training.")
@@ -741,7 +761,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
 # ==================== Model Training ====================== #
 #train model
 if not hyperparameter_tuning:
-   logs = train_model(model, train_loader, val_loader, loss_fn, optimizer, epochs, filename, current_stage, unfreeze_every, unfreeze_stages, patience=5)
+   logs = train_model(model, train_loader, val_loader, loss_fn, optimizer, epochs, filename, current_stage, unfreeze_every, unfreeze_stages, patience=2)
 
 
 # ## 4.3 Saving the Model and export Data
