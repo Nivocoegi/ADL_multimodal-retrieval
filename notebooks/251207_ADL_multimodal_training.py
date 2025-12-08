@@ -194,7 +194,7 @@ progressive_unfreeze = True
 
 
 # ========= Run name for saving
-run_name = "LR-schedule"
+run_name = "grad-clip"
 
 # ## 1.3 Data Loading
 # 
