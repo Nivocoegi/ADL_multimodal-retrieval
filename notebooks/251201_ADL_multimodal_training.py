@@ -619,44 +619,6 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
                 optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=lr)
                 stage_unfrozen = stage  # mark stage as unfrozen
 
-        # ======== PROGRESSIVE UNFREEZING
-        # warmup_epochs = 0
-        # stage = "projection"
-        # if progressive_unfreeze and current_stage < len(unfreeze_stages):
-        #     stage = unfreeze_stages[current_stage]
-        #
-        #     if 'stage_unfrozen' not in locals() or stage_unfrozen != stage:
-        #         print(f"\n>>> Unfreezing stage: {stage}")
-        #
-        #         # ===== Projection unfreeze =====
-        #         if stage == "projection":
-        #             print("Unfreezing projection layers.")
-        #             model.visual_projection.requires_grad = True
-        #             model.text_projection.requires_grad = True
-        #             model.logit_scale.requires_grad = True
-        #             lr = 1e-5
-        #
-        #         elif stage == "text":
-        #             print("Unfreezing text encoder.")
-        #             for p in model.text_model.parameters():
-        #                 p.requires_grad = True
-        #             lr = 5e-6
-        #
-        #         elif stage == "vision":
-        #             print("Unfreezing vision encoder.")
-        #             for p in model.vision_model.parameters():
-        #                 p.requires_grad = True
-        #             lr = 1e-6
-        #
-        #         # build new optimizer
-        #         optimizer = optim.AdamW(
-        #             filter(lambda p: p.requires_grad, model.parameters()),
-        #             lr=lr
-        #         )
-        #
-        #         stage_unfrozen = stage
-        #         current_stage += 1
-
         # ====== Epoch time measurement
         start = time.time()
 
@@ -675,6 +637,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
 
             optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
             train_loss += loss.item()
         train_loss /= len(train_loader)
