@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/251129_ADL_multimodal_training.py", line 348, in <module>
+    avg_caption_length = sum(len(caption.split()) for caption in captions["caption"]) / dataset_length
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/251129_ADL_multimodal_training.py", line 348, in <genexpr>
+    avg_caption_length = sum(len(caption.split()) for caption in captions["caption"]) / dataset_length
+AttributeError: 'float' object has no attribute 'split'

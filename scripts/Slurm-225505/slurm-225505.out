@@ -1,0 +1,105 @@
+Python executable:
+Python 3.10.19
+GPU Info:
+Sat Dec  6 23:35:19 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.161.07             Driver Version: 535.161.07   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA A100-PCIE-40GB          On  | 00000000:E3:00.0 Off |                    0 |
+| N/A   42C    P0              37W / 250W |      0MiB / 40960MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
+Dataset contains 40455 image-caption pairs.
+Number of unique words in captions: 8488
+Average caption length: 11.78 words
+Average image size: 397.25 x 457.87 pixels
+8091 images in dataset
+count    8091.0
+mean        5.0
+std         0.0
+min         5.0
+25%         5.0
+50%         5.0
+75%         5.0
+max         5.0
+dtype: float64
+Model will be saved as: 20251206_clip_cuda_sub-size-full_bs32_ep200_lr1e-05_overfitt
+Epoch 1/200 | Train Loss: 3.3628 | Val Loss: 3.2797 | MeanSim: 0.1490 | R@1: 0.000 | Epoch time: 203.66s
+Epoch 2/200 | Train Loss: 3.1103 | Val Loss: 3.1641 | MeanSim: 0.1281 | R@1: 0.000 | Epoch time: 196.65s
+Epoch 3/200 | Train Loss: 2.9147 | Val Loss: 3.0955 | MeanSim: 0.1203 | R@1: 0.000 | Epoch time: 194.21s
+Epoch 4/200 | Train Loss: 2.7821 | Val Loss: 3.0524 | MeanSim: 0.1193 | R@1: 0.000 | Epoch time: 197.08s
+Epoch 5/200 | Train Loss: 2.6826 | Val Loss: 3.0170 | MeanSim: 0.1196 | R@1: 0.000 | Epoch time: 198.27s
+Epoch 6/200 | Train Loss: 2.6041 | Val Loss: 3.0144 | MeanSim: 0.1193 | R@1: 0.000 | Epoch time: 195.90s
+Epoch 7/200 | Train Loss: 2.5382 | Val Loss: 3.0406 | MeanSim: 0.1100 | R@1: 0.000 | Epoch time: 197.40s
+Epoch 8/200 | Train Loss: 2.4935 | Val Loss: 2.9629 | MeanSim: 0.1168 | R@1: 0.000 | Epoch time: 197.48s
+Epoch 9/200 | Train Loss: 2.4470 | Val Loss: 3.0080 | MeanSim: 0.1168 | R@1: 0.000 | Epoch time: 196.23s
+Epoch 10/200 | Train Loss: 2.4079 | Val Loss: 2.9763 | MeanSim: 0.1223 | R@1: 0.000 | Epoch time: 196.41s
+Epoch 11/200 | Train Loss: 2.3699 | Val Loss: 2.9568 | MeanSim: 0.1140 | R@1: 0.000 | Epoch time: 197.15s
+Epoch 12/200 | Train Loss: 2.3440 | Val Loss: 2.9708 | MeanSim: 0.1164 | R@1: 0.000 | Epoch time: 197.18s
+Epoch 13/200 | Train Loss: 2.3241 | Val Loss: 2.9579 | MeanSim: 0.1094 | R@1: 0.000 | Epoch time: 197.28s
+Epoch 14/200 | Train Loss: 2.2896 | Val Loss: 2.9528 | MeanSim: 0.1212 | R@1: 0.000 | Epoch time: 196.79s
+Epoch 15/200 | Train Loss: 2.2609 | Val Loss: 3.0450 | MeanSim: 0.1330 | R@1: 0.000 | Epoch time: 197.64s
+Epoch 16/200 | Train Loss: 2.2366 | Val Loss: 2.9849 | MeanSim: 0.1176 | R@1: 0.000 | Epoch time: 197.83s
+Epoch 17/200 | Train Loss: 2.2238 | Val Loss: 2.9776 | MeanSim: 0.1189 | R@1: 0.000 | Epoch time: 196.66s
+Epoch 18/200 | Train Loss: 2.2019 | Val Loss: 2.9712 | MeanSim: 0.1234 | R@1: 0.000 | Epoch time: 197.19s
+Epoch 19/200 | Train Loss: 2.1853 | Val Loss: 3.1128 | MeanSim: 0.1359 | R@1: 0.000 | Epoch time: 197.32s
+Epoch 20/200 | Train Loss: 2.1577 | Val Loss: 2.9678 | MeanSim: 0.1188 | R@1: 0.000 | Epoch time: 196.70s
+Epoch 21/200 | Train Loss: 2.1506 | Val Loss: 2.9922 | MeanSim: 0.1232 | R@1: 0.000 | Epoch time: 197.19s
+Epoch 22/200 | Train Loss: 2.1318 | Val Loss: 2.9793 | MeanSim: 0.1344 | R@1: 0.000 | Epoch time: 197.25s
+Epoch 23/200 | Train Loss: 2.1002 | Val Loss: 3.0290 | MeanSim: 0.1180 | R@1: 0.000 | Epoch time: 195.87s
+Epoch 24/200 | Train Loss: 2.1057 | Val Loss: 3.0141 | MeanSim: 0.1301 | R@1: 0.000 | Epoch time: 195.82s
+Epoch 25/200 | Train Loss: 2.0898 | Val Loss: 2.9805 | MeanSim: 0.1268 | R@1: 0.000 | Epoch time: 195.91s
+Epoch 26/200 | Train Loss: 2.0727 | Val Loss: 3.0264 | MeanSim: 0.1229 | R@1: 0.000 | Epoch time: 196.48s
+Epoch 27/200 | Train Loss: 2.0570 | Val Loss: 2.9798 | MeanSim: 0.1256 | R@1: 0.000 | Epoch time: 196.16s
+Epoch 28/200 | Train Loss: 2.0398 | Val Loss: 2.9961 | MeanSim: 0.1243 | R@1: 0.000 | Epoch time: 197.22s
+Epoch 29/200 | Train Loss: 2.0312 | Val Loss: 3.0096 | MeanSim: 0.1329 | R@1: 0.000 | Epoch time: 196.78s
+Epoch 30/200 | Train Loss: 2.0303 | Val Loss: 2.9900 | MeanSim: 0.1228 | R@1: 0.000 | Epoch time: 196.88s
+Epoch 31/200 | Train Loss: 2.0078 | Val Loss: 3.0251 | MeanSim: 0.1308 | R@1: 0.000 | Epoch time: 196.65s
+Epoch 32/200 | Train Loss: 2.0009 | Val Loss: 3.0060 | MeanSim: 0.1332 | R@1: 0.000 | Epoch time: 194.51s
+Epoch 33/200 | Train Loss: 1.9728 | Val Loss: 3.0019 | MeanSim: 0.1249 | R@1: 0.000 | Epoch time: 195.15s
+Epoch 34/200 | Train Loss: 1.9767 | Val Loss: 3.0802 | MeanSim: 0.1555 | R@1: 0.000 | Epoch time: 194.47s
+Epoch 35/200 | Train Loss: 1.9602 | Val Loss: 3.0477 | MeanSim: 0.1298 | R@1: 0.000 | Epoch time: 195.19s
+Epoch 36/200 | Train Loss: 1.9474 | Val Loss: 3.0534 | MeanSim: 0.1417 | R@1: 0.000 | Epoch time: 194.70s
+Epoch 37/200 | Train Loss: 1.9535 | Val Loss: 3.0433 | MeanSim: 0.1352 | R@1: 0.000 | Epoch time: 195.65s
+Epoch 38/200 | Train Loss: 1.9364 | Val Loss: 2.9902 | MeanSim: 0.1344 | R@1: 0.000 | Epoch time: 194.64s
+Epoch 39/200 | Train Loss: 1.9243 | Val Loss: 3.1210 | MeanSim: 0.1375 | R@1: 0.000 | Epoch time: 194.37s
+Epoch 40/200 | Train Loss: 1.9126 | Val Loss: 3.0297 | MeanSim: 0.1261 | R@1: 0.000 | Epoch time: 195.03s
+Epoch 41/200 | Train Loss: 1.8947 | Val Loss: 3.0297 | MeanSim: 0.1230 | R@1: 0.000 | Epoch time: 195.31s
+Epoch 42/200 | Train Loss: 1.8875 | Val Loss: 3.1011 | MeanSim: 0.1304 | R@1: 0.000 | Epoch time: 194.73s
+Epoch 43/200 | Train Loss: 1.8898 | Val Loss: 2.9993 | MeanSim: 0.1189 | R@1: 0.000 | Epoch time: 194.42s
+Epoch 44/200 | Train Loss: 1.8721 | Val Loss: 3.0713 | MeanSim: 0.1229 | R@1: 0.000 | Epoch time: 194.44s
+Epoch 45/200 | Train Loss: 1.8632 | Val Loss: 3.0730 | MeanSim: 0.1299 | R@1: 0.000 | Epoch time: 194.83s
+Epoch 46/200 | Train Loss: 1.8621 | Val Loss: 3.0408 | MeanSim: 0.1382 | R@1: 0.000 | Epoch time: 194.30s
+Epoch 47/200 | Train Loss: 1.8489 | Val Loss: 3.0929 | MeanSim: 0.1359 | R@1: 0.000 | Epoch time: 194.97s
+Epoch 48/200 | Train Loss: 1.8440 | Val Loss: 3.1067 | MeanSim: 0.1298 | R@1: 0.000 | Epoch time: 193.81s
+Epoch 49/200 | Train Loss: 1.8238 | Val Loss: 3.1534 | MeanSim: 0.1273 | R@1: 0.000 | Epoch time: 193.91s
+Epoch 50/200 | Train Loss: 1.8378 | Val Loss: 3.1020 | MeanSim: 0.1357 | R@1: 0.000 | Epoch time: 194.55s
+Epoch 51/200 | Train Loss: 1.8233 | Val Loss: 3.0500 | MeanSim: 0.1270 | R@1: 0.000 | Epoch time: 194.41s
+Epoch 52/200 | Train Loss: 1.8175 | Val Loss: 3.1709 | MeanSim: 0.1347 | R@1: 0.000 | Epoch time: 193.68s
+Epoch 53/200 | Train Loss: 1.8257 | Val Loss: 3.2013 | MeanSim: 0.1229 | R@1: 0.000 | Epoch time: 194.09s
+Epoch 54/200 | Train Loss: 1.7998 | Val Loss: 3.1197 | MeanSim: 0.1430 | R@1: 0.000 | Epoch time: 193.50s
+Epoch 55/200 | Train Loss: 1.7970 | Val Loss: 3.2031 | MeanSim: 0.1176 | R@1: 0.000 | Epoch time: 194.61s
+Epoch 56/200 | Train Loss: 1.8005 | Val Loss: 3.1063 | MeanSim: 0.1327 | R@1: 0.000 | Epoch time: 193.41s
+Epoch 57/200 | Train Loss: 1.7882 | Val Loss: 3.1928 | MeanSim: 0.1370 | R@1: 0.000 | Epoch time: 193.85s
+Epoch 58/200 | Train Loss: 1.7925 | Val Loss: 3.1093 | MeanSim: 0.1371 | R@1: 0.000 | Epoch time: 194.62s
+Epoch 59/200 | Train Loss: 1.7724 | Val Loss: 3.1400 | MeanSim: 0.1442 | R@1: 0.000 | Epoch time: 194.53s
+Epoch 60/200 | Train Loss: 1.7568 | Val Loss: 3.2055 | MeanSim: 0.1246 | R@1: 0.000 | Epoch time: 193.66s
+Epoch 61/200 | Train Loss: 1.7622 | Val Loss: 3.1246 | MeanSim: 0.1359 | R@1: 0.000 | Epoch time: 193.06s
+Epoch 62/200 | Train Loss: 1.7526 | Val Loss: 3.2004 | MeanSim: 0.1350 | R@1: 0.000 | Epoch time: 195.14s
+Epoch 63/200 | Train Loss: 1.7538 | Val Loss: 3.1168 | MeanSim: 0.1335 | R@1: 0.000 | Epoch time: 193.33s
+Epoch 64/200 | Train Loss: 1.7416 | Val Loss: 3.0812 | MeanSim: 0.1415 | R@1: 0.000 | Epoch time: 193.64s
+Early stopping triggered.
+Model saved to /cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/runs/20251206_clip_cuda_sub-size-full_bs32_ep200_lr1e-05_overfitt/20251206_clip_cuda_sub-size-full_bs32_ep200_lr1e-05_overfitt_model.pth
+Training logs saved to /cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/runs/20251206_clip_cuda_sub-size-full_bs32_ep200_lr1e-05_overfitt/20251206_clip_cuda_sub-size-full_bs32_ep200_lr1e-05_overfitt_logs.csv
