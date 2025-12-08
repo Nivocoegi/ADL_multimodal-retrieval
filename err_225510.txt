@@ -1,0 +1,24 @@
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Traceback (most recent call last):
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/251123_ADL_multimodal_training.py", line 476, in <module>
+    model.to(DEVICE)
+  File "/cfs/earth/scratch/vognic01/.conda/envs/ADL_multimodal-retrieval/lib/python3.10/site-packages/transformers/modeling_utils.py", line 4343, in to
+    return super().to(*args, **kwargs)
+  File "/cfs/earth/scratch/vognic01/.conda/envs/ADL_multimodal-retrieval/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1371, in to
+    return self._apply(convert)
+  File "/cfs/earth/scratch/vognic01/.conda/envs/ADL_multimodal-retrieval/lib/python3.10/site-packages/torch/nn/modules/module.py", line 930, in _apply
+    module._apply(fn)
+  File "/cfs/earth/scratch/vognic01/.conda/envs/ADL_multimodal-retrieval/lib/python3.10/site-packages/torch/nn/modules/module.py", line 930, in _apply
+    module._apply(fn)
+  File "/cfs/earth/scratch/vognic01/.conda/envs/ADL_multimodal-retrieval/lib/python3.10/site-packages/torch/nn/modules/module.py", line 930, in _apply
+    module._apply(fn)
+  File "/cfs/earth/scratch/vognic01/.conda/envs/ADL_multimodal-retrieval/lib/python3.10/site-packages/torch/nn/modules/module.py", line 957, in _apply
+    param_applied = fn(param)
+  File "/cfs/earth/scratch/vognic01/.conda/envs/ADL_multimodal-retrieval/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1357, in convert
+    return t.to(
+torch.AcceleratorError: CUDA error: uncorrectable ECC error encountered
+Search for `cudaErrorECCUncorrectable' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+

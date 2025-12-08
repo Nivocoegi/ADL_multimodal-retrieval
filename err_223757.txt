@@ -1,0 +1,4 @@
+  File "/cfs/earth/scratch/vognic01/ADL_multimodal-retrieval/notebooks/251129_ADL_multimodal_training.py", line 556
+    inputs = processor(text=texts, images=images, padding=True, trunction=True, return_tensors="pt", padding=True).to(DEVICE)
+                                                                                                     ^^^^^^^^^^^^
+SyntaxError: keyword argument repeated: padding

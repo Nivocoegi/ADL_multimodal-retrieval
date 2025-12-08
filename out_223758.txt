@@ -1,0 +1,38 @@
+Python executable:
+Python 3.10.19
+GPU Info:
+Sat Nov 29 16:37:54 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.161.07             Driver Version: 535.161.07   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA A100-PCIE-40GB          On  | 00000000:65:00.0 Off |                    0 |
+| N/A   32C    P0              38W / 250W |      0MiB / 40960MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
+Dataset contains 158915 image-caption pairs.
+Number of unique words in captions: 18273
+Average caption length: 13.37 words
+Average image size: 395.13 x 459.61 pixels
+31783 images in dataset
+count    31783.0
+mean         5.0
+std          0.0
+min          5.0
+25%          5.0
+50%          5.0
+75%          5.0
+max          5.0
+dtype: float64
+Model will be saved as: 20251129_clip_cuda_sub-size-full_bs64_ep30_lr5e-05_flickr30k_prog_unfreeze
